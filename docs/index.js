@@ -3,7 +3,7 @@ let jsonObj;
 let g;
 
 function start(e) {
-  g = new JSGantt.GanttChart(document.getElementById("embedded-Gantt"), "week");
+  g = new JSGantt.GanttChart(document.getElementById("embedded-Gantt"), "month");
   if (g.getDivId() != null) {
     const newDataurl = document.getElementById("dataurl").value ? document.getElementById("dataurl").value : "./fixes/data.json";
     const vDebug = document.querySelector("#debug:checked") ? true : false;

@@ -9,6 +9,7 @@ export const makeInput = function (formattedValue, editable, type = 'text', valu
       case 'date':
         // Take timezone into account before converting to ISO String
         value = value ? new Date(value.getTime() - (value.getTimezoneOffset() * 60000)).toISOString().split('T')[0] : '';
+        // TODO: Show a persian date component here:
         return `<input class="gantt-inputtable" type="date" value="${value}">`;
       case 'resource':
         if (choices) {

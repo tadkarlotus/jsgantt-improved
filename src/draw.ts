@@ -1,4 +1,6 @@
 import * as lang from "./lang";
+import * as moment from 'jalali-moment';
+
 import {
   mouseOver,
   mouseOut,
@@ -175,6 +177,17 @@ export const GanttChart = function (pDiv, pFormat) {
   this.getArrayLocationByID = getArrayLocationByID.bind(this);
   this.drawSelector = drawSelector.bind(this);
   this.printChart = printChart.bind(this);
+
+  //TODO: it should be moved to date_util.ts
+  this.toStandardDate = function(date: Date) {
+    var mm = date.getMonth() + 1; // getMonth() is zero-based
+    var dd = date.getDate();
+  
+    return [date.getFullYear(),
+            (mm>9 ? '' : '0') + mm,
+            (dd>9 ? '' : '0') + dd
+           ].join('-');
+  };
 
   this.clearDependencies = function () {
     let parent = this.getLines();
@@ -358,9 +371,26 @@ export const GanttChart = function (pDiv, pFormat) {
     vTmpDate.setSeconds(0);
     vTmpDate.setMilliseconds(0);
 
+    // let startTime = vTmpDate.getTime();
+    // let endTime = vMaxDate.getTime();
+
+    // if(this.vFormat == "month") {
+      moment.locale('fa');
+      let vTmpDateAsString = vMinDate.getFullYear() + '-' + (vMinDate.getMonth() + 1) + '-' + vMinDate.getDate();
+      let vMaxDateAsString = vMaxDate.getFullYear() + '-' + (vMaxDate.getMonth() + 1) + '-' + vMaxDate.getDate();
+      let persianStartTime = moment.from(vTmpDateAsString, 'en', 'YYYY-MM-DD').locale('fa').format('YYYY-MM-DD');
+      let persianEndTime = moment.from(vMaxDateAsString, 'en', 'YYYY-MM-DD').locale('fa').format('YYYY-MM-DD');
+      let startTime = moment(persianStartTime, 'jYYYY/jMM/jDD');
+      let endTime = moment(persianEndTime, 'jYYYY/jMM/jDD');
+      let diff = endTime.diff(startTime);
+    // }
+
     let vColSpan = 1;
     // Major Date Header
-    while (vTmpDate.getTime() <= vMaxDate.getTime()) {
+    // while (vTmpDate.getTime() <= vMaxDate.getTime()) {
+    while (true) {
+      if (this.vFormat != "month" && vTmpDate.getTime() <= vMaxDate.getTime()) break;
+      if (this.vFormat === "month" && endTime.diff(startTime) <= 0) break;
       let vHeaderCellClass = "gmajorheading";
       let vCellContents = "";
 
@@ -385,11 +415,18 @@ export const GanttChart = function (pDiv, pFormat) {
         newNode(vTmpCell, "div", null, null, formatDateStr(vTmpDate, this.vWeekMajorDateDisplayFormat, this.vLangs[this.vLang]), vColWidth);
         vTmpDate.setDate(vTmpDate.getDate() + 7);
       } else if (this.vFormat == "month") {
-        vColSpan = 12 - vTmpDate.getMonth();
-        if (vTmpDate.getFullYear() == vMaxDate.getFullYear()) vColSpan -= 11 - vMaxDate.getMonth();
+        // vColSpan = 12 - vTmpDate.getMonth();
+        vColSpan = 12 - (+startTime.month());
+
+        // if (vTmpDate.getFullYear() == vMaxDate.getFullYear()) vColSpan -= 11 - vMaxDate.getMonth();
+        if (startTime.year() == endTime.year()) vColSpan -= 11 - (endTime.month());
         const vTmpCell = newNode(vTmpRow, "td", null, vHeaderCellClass, null, null, null, null, vColSpan);
-        newNode(vTmpCell, "div", null, null, formatDateStr(vTmpDate, this.vMonthMajorDateDisplayFormat, this.vLangs[this.vLang]), vColWidth * vColSpan);
+        // newNode(vTmpCell, "div", null, null, formatDateStr(vTmpDate, this.vMonthMajorDateDisplayFormat, this.vLangs[this.vLang]), vColWidth * vColSpan);
+        newNode(vTmpCell, "div", null, null, formatDateStr(startTime.toDate(), this.vMonthMajorDateDisplayFormat, this.vLangs[this.vLang]), vColWidth * vColSpan);
         vTmpDate.setFullYear(vTmpDate.getFullYear() + 1, 0, 1);
+        startTime.add(1, 'year');
+        startTime.month(0);
+        startTime.date(1);
       } else if (this.vFormat == "quarter") {
         vColSpan = 4 - Math.floor(vTmpDate.getMonth() / 3);
         if (vTmpDate.getFullYear() == vMaxDate.getFullYear()) vColSpan -= 3 - Math.floor(vMaxDate.getMonth() / 3);
@@ -410,10 +447,15 @@ export const GanttChart = function (pDiv, pFormat) {
 
     // Minor Date header and Cell Rows
     vTmpDate.setFullYear(vMinDate.getFullYear(), vMinDate.getMonth(), vMinDate.getDate()); // , vMinDate.getHours()
+    startTime = moment(persianStartTime, 'jYYYY/jMM/jDD');
+
     if (this.vFormat == "hour") vTmpDate.setHours(vMinDate.getHours());
     let vNumCols: number = 0;
 
-    while (vTmpDate.getTime() <= vMaxDate.getTime()) {
+     // while (vTmpDate.getTime() <= vMaxDate.getTime()) {
+    while (true) {
+      if (this.vFormat != "month" && vTmpDate.getTime() <= vMaxDate.getTime()) break;
+      if (this.vFormat === "month" && endTime.diff(startTime) <= 0) break;
       let vMinorHeaderCellClass = "gminorheading";
 
       if (this.vFormat == "day") {
@@ -441,16 +483,27 @@ export const GanttChart = function (pDiv, pFormat) {
 
         vTmpDate.setDate(vTmpDate.getDate() + 7);
       } else if (this.vFormat == "month") {
-        if (vTmpDate <= vMaxDate) {
+        // if (vTmpDate <= vMaxDate) {
+        //   const vTmpCell = newNode(vTmpRow, "td", null, vMinorHeaderCellClass);
+        //   newNode(vTmpCell, "div", null, null, formatDateStr(vTmpDate, this.vMonthMinorDateDisplayFormat, this.vLangs[this.vLang]), vColWidth);
+        //   vNumCols++;
+        // }
+        
+        if (startTime <= endTime) {
           const vTmpCell = newNode(vTmpRow, "td", null, vMinorHeaderCellClass);
-          newNode(vTmpCell, "div", null, null, formatDateStr(vTmpDate, this.vMonthMinorDateDisplayFormat, this.vLangs[this.vLang]), vColWidth);
+          newNode(vTmpCell, "div", null, null, formatDateStr(startTime.toDate(), this.vMonthMinorDateDisplayFormat, this.vLangs[this.vLang]), vColWidth);
           vNumCols++;
         }
 
         vTmpDate.setDate(vTmpDate.getDate() + 1);
-
-        while (vTmpDate.getDate() > 1) {
+        startTime.add(1, 'day');
+        
+        // while (vTmpDate.getDate() > 1) {
+        //   vTmpDate.setDate(vTmpDate.getDate() + 1);
+        // }
+        while (startTime.date() > 1) {
           vTmpDate.setDate(vTmpDate.getDate() + 1);
+          startTime.add(1, 'day');
         }
       } else if (this.vFormat == "quarter") {
         if (vTmpDate <= vMaxDate) {

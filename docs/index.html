@@ -131,7 +131,10 @@
     </div>
     <div id="embedded-Gantt">
       <script type="text/javascript">
-        var g = new JSGantt.GanttChart(document.getElementById('embedded-Gantt'), 'week');
+        var g = new JSGantt.GanttChart(document.getElementById('embedded-Gantt'), 'month');
+        g.setOptions({
+          vLang: 'fa',
+        });
         if (g.getDivId() != null) {
           g.setCaptionType('Complete');  // Set to Show Caption (None,Caption,Resource,Duration,Complete)
           g.setQuarterColWidth(36);
