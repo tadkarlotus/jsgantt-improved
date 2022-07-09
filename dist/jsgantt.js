@@ -389,12 +389,24 @@ exports.GanttChart = function (pDiv, pFormat) {
                 }
             }
             else if (this.vFormat == "quarter") {
-                vColSpan = 4 - Math.floor(vTmpDate.getMonth() / 3);
-                if (vTmpDate.getFullYear() == vMaxDate.getFullYear())
-                    vColSpan -= 3 - Math.floor(vMaxDate.getMonth() / 3);
-                var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, vHeaderCellClass, null, null, null, null, vColSpan);
-                draw_utils_1.newNode(vTmpCell, "div", null, null, date_utils_1.formatDateStr(vTmpDate, this.vQuarterMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang), vColWidth * vColSpan);
-                vTmpDate.setFullYear(vTmpDate.getFullYear() + 1, 0, 1);
+                if (this.vLang === "fa") {
+                    vColSpan = 4 - Math.floor(startTime.month() / 3);
+                    if (startTime.year() == endTime.year())
+                        vColSpan -= 3 - Math.floor(endTime.month() / 3);
+                    var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, vHeaderCellClass, null, null, null, null, vColSpan);
+                    draw_utils_1.newNode(vTmpCell, "div", null, null, date_utils_1.formatDateStr(startTime, this.vQuarterMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang), vColWidth * vColSpan);
+                    startTime.add(1, 'year');
+                    startTime.month(0);
+                    startTime.date(1);
+                }
+                else {
+                    vColSpan = 4 - Math.floor(vTmpDate.getMonth() / 3);
+                    if (vTmpDate.getFullYear() == vMaxDate.getFullYear())
+                        vColSpan -= 3 - Math.floor(vMaxDate.getMonth() / 3);
+                    var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, vHeaderCellClass, null, null, null, null, vColSpan);
+                    draw_utils_1.newNode(vTmpCell, "div", null, null, date_utils_1.formatDateStr(vTmpDate, this.vQuarterMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang), vColWidth * vColSpan);
+                    vTmpDate.setFullYear(vTmpDate.getFullYear() + 1, 0, 1);
+                }
             }
             else if (this.vFormat == "hour") {
                 vColSpan = 24 - vTmpDate.getHours();
@@ -473,14 +485,27 @@ exports.GanttChart = function (pDiv, pFormat) {
                 }
             }
             else if (this.vFormat == "quarter") {
-                if (vTmpDate <= vMaxDate) {
-                    var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, vMinorHeaderCellClass);
-                    draw_utils_1.newNode(vTmpCell, "div", null, null, date_utils_1.formatDateStr(vTmpDate, this.vQuarterMinorDateDisplayFormat, this.vLangs[this.vLang], this.vLang), vColWidth);
-                    vNumCols++;
+                if (this.vLang === "fa") {
+                    if (startTime <= endTime) {
+                        var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, vMinorHeaderCellClass);
+                        draw_utils_1.newNode(vTmpCell, "div", null, null, date_utils_1.formatDateStr(startTime.toDate(), this.vQuarterMinorDateDisplayFormat, this.vLangs[this.vLang], this.vLang), vColWidth);
+                        vNumCols++;
+                    }
+                    startTime.add(81, 'day');
+                    while (startTime.date() > 1) {
+                        startTime.add(1, 'day');
+                    }
                 }
-                vTmpDate.setDate(vTmpDate.getDate() + 81);
-                while (vTmpDate.getDate() > 1)
-                    vTmpDate.setDate(vTmpDate.getDate() + 1);
+                else {
+                    if (vTmpDate <= vMaxDate) {
+                        var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, vMinorHeaderCellClass);
+                        draw_utils_1.newNode(vTmpCell, "div", null, null, date_utils_1.formatDateStr(vTmpDate, this.vQuarterMinorDateDisplayFormat, this.vLangs[this.vLang], this.vLang), vColWidth);
+                        vNumCols++;
+                    }
+                    vTmpDate.setDate(vTmpDate.getDate() + 81);
+                    while (vTmpDate.getDate() > 1)
+                        vTmpDate.setDate(vTmpDate.getDate() + 1);
+                }
             }
             else if (this.vFormat == "hour") {
                 for (var i = vTmpDate.getHours(); i < 24; i++) {
@@ -4943,10 +4968,16 @@ exports.getOffset = function (pStartDate, pEndDate, pColWidth, pFormat, pShowWee
     // Length of task in hours
     var oneHour = 3600000;
     var vTaskRight = 0;
+    var startTime = moment();
+    var endTime = moment();
     if (vLang === 'fa') {
+        moment.locale('fa');
         vMonthDaysArr = new Array(31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29);
         vTaskRight = exports.calculatePersianCurrentDateOffset(curTaskStart, curTaskEnd) / oneHour;
-        moment.locale('fa');
+        var tmpTaskStart = moment.from(date.toStandardDate(curTaskStart), 'en', 'YYYY-MM-DD').locale('fa').format('YYYY-MM-DD');
+        var tmpTaskEnd = moment.from(date.toStandardDate(curTaskEnd), 'en', 'YYYY-MM-DD').locale('fa').format('YYYY-MM-DD');
+        startTime = moment(tmpTaskStart, 'jYYYY/jMM/jDD');
+        endTime = moment(tmpTaskEnd, 'jYYYY/jMM/jDD');
     }
     else {
         vTaskRight = exports.calculateCurrentDateOffset(curTaskStart, curTaskEnd) / oneHour;
@@ -4973,10 +5004,6 @@ exports.getOffset = function (pStartDate, pEndDate, pColWidth, pFormat, pShowWee
     }
     else if (pFormat == 'month') {
         if (vLang == 'fa') {
-            var tmpTaskStart = moment.from(date.toStandardDate(curTaskStart), 'en', 'YYYY-MM-DD').locale('fa').format('YYYY-MM-DD');
-            var tmpTaskEnd = moment.from(date.toStandardDate(curTaskEnd), 'en', 'YYYY-MM-DD').locale('fa').format('YYYY-MM-DD');
-            var startTime = moment(tmpTaskStart, 'jYYYY/jMM/jDD');
-            var endTime = moment(tmpTaskEnd, 'jYYYY/jMM/jDD');
             var vMonthsDiff = (12 * (endTime.year() - startTime.year())) + (endTime.month() - startTime.month());
             vPosTmpDate = moment(endTime);
             vPosTmpDate.date(startTime.date());
@@ -4992,11 +5019,20 @@ exports.getOffset = function (pStartDate, pEndDate, pColWidth, pFormat, pShowWee
         }
     }
     else if (pFormat == 'quarter') {
-        var vMonthsDiff = (12 * (curTaskEnd.getFullYear() - curTaskStart.getFullYear())) + (curTaskEnd.getMonth() - curTaskStart.getMonth());
-        vPosTmpDate = new Date(curTaskEnd.getTime());
-        vPosTmpDate.setDate(curTaskStart.getDate());
-        var vDaysCrctn = (curTaskEnd.getTime() - vPosTmpDate.getTime()) / (86400000);
-        vTaskRightPx = Math.ceil((vMonthsDiff * ((pColWidth + QUARTER_CELL_MARGIN_WIDTH) / 3)) + (vDaysCrctn * (pColWidth / 90)) - 1);
+        if (vLang == 'fa') {
+            var vMonthsDiff = (12 * (endTime.year() - startTime.year())) + (endTime.month() - startTime.month());
+            vPosTmpDate = moment(endTime);
+            vPosTmpDate.date(startTime.date());
+            var vDaysCrctn = (endTime.diff(vPosTmpDate)) / (86400000);
+            vTaskRightPx = Math.ceil((vMonthsDiff * ((pColWidth + QUARTER_CELL_MARGIN_WIDTH) / 3)) + (vDaysCrctn * (pColWidth / 90)) - 1);
+        }
+        else {
+            var vMonthsDiff = (12 * (curTaskEnd.getFullYear() - curTaskStart.getFullYear())) + (curTaskEnd.getMonth() - curTaskStart.getMonth());
+            vPosTmpDate = new Date(curTaskEnd.getTime());
+            vPosTmpDate.setDate(curTaskStart.getDate());
+            var vDaysCrctn = (curTaskEnd.getTime() - vPosTmpDate.getTime()) / (86400000);
+            vTaskRightPx = Math.ceil((vMonthsDiff * ((pColWidth + QUARTER_CELL_MARGIN_WIDTH) / 3)) + (vDaysCrctn * (pColWidth / 90)) - 1);
+        }
     }
     else if (pFormat == 'hour') {
         // can't just calculate sum because of daylight savings changes

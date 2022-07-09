@@ -150,10 +150,17 @@ export const getOffset = function (pStartDate, pEndDate, pColWidth, pFormat, pSh
   // Length of task in hours
   const oneHour = 3600000;
   let vTaskRight = 0;
+  let startTime = moment();
+  let endTime = moment();
   if (vLang === 'fa') {
+    moment.locale('fa');
     vMonthDaysArr = new Array(31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29);
     vTaskRight = calculatePersianCurrentDateOffset(curTaskStart, curTaskEnd) / oneHour ;
-    moment.locale('fa');
+    
+    let tmpTaskStart = moment.from(date.toStandardDate(curTaskStart), 'en', 'YYYY-MM-DD').locale('fa').format('YYYY-MM-DD');
+    let tmpTaskEnd = moment.from(date.toStandardDate(curTaskEnd), 'en', 'YYYY-MM-DD').locale('fa').format('YYYY-MM-DD');
+    startTime = moment(tmpTaskStart, 'jYYYY/jMM/jDD');
+    endTime = moment(tmpTaskEnd, 'jYYYY/jMM/jDD');
   } else {
     vTaskRight = calculateCurrentDateOffset(curTaskStart, curTaskEnd) / oneHour ;
   }
@@ -180,30 +187,37 @@ export const getOffset = function (pStartDate, pEndDate, pColWidth, pFormat, pSh
   }
   else if (pFormat == 'month') {
     if (vLang == 'fa') {
-      let tmpTaskStart = moment.from(date.toStandardDate(curTaskStart), 'en', 'YYYY-MM-DD').locale('fa').format('YYYY-MM-DD');
-      let tmpTaskEnd = moment.from(date.toStandardDate(curTaskEnd), 'en', 'YYYY-MM-DD').locale('fa').format('YYYY-MM-DD');
-      let startTime = moment(tmpTaskStart, 'jYYYY/jMM/jDD');
-      let endTime = moment(tmpTaskEnd, 'jYYYY/jMM/jDD');
       let vMonthsDiff = (12 * (endTime.year() - startTime.year())) + (endTime.month() - startTime.month());
       vPosTmpDate = moment(endTime);
       vPosTmpDate.date(startTime.date());
       let vDaysCrctn = (endTime.diff(vPosTmpDate)) / (86400000);
+      
       vTaskRightPx = Math.ceil((vMonthsDiff * (pColWidth + MONTH_CELL_MARGIN_WIDTH)) + (vDaysCrctn * (pColWidth / vMonthDaysArr[endTime.month()])) - 1);
     } else {
       let vMonthsDiff = (12 * (curTaskEnd.getFullYear() - curTaskStart.getFullYear())) + (curTaskEnd.getMonth() - curTaskStart.getMonth());
       vPosTmpDate = new Date(curTaskEnd.getTime());
       vPosTmpDate.setDate(curTaskStart.getDate());
       let vDaysCrctn = (curTaskEnd.getTime() - vPosTmpDate.getTime()) / (86400000);
+      
       vTaskRightPx = Math.ceil((vMonthsDiff * (pColWidth + MONTH_CELL_MARGIN_WIDTH)) + (vDaysCrctn * (pColWidth / vMonthDaysArr[curTaskEnd.getMonth()])) - 1);
     }
   }
   else if (pFormat == 'quarter') {
-    let vMonthsDiff = (12 * (curTaskEnd.getFullYear() - curTaskStart.getFullYear())) + (curTaskEnd.getMonth() - curTaskStart.getMonth());
-    vPosTmpDate = new Date(curTaskEnd.getTime());
-    vPosTmpDate.setDate(curTaskStart.getDate());
-    let vDaysCrctn = (curTaskEnd.getTime() - vPosTmpDate.getTime()) / (86400000);
+    if (vLang == 'fa') {
+      let vMonthsDiff = (12 * (endTime.year() - startTime.year())) + (endTime.month() - startTime.month());
+      vPosTmpDate = moment(endTime);
+      vPosTmpDate.date(startTime.date());
+      let vDaysCrctn = (endTime.diff(vPosTmpDate)) / (86400000);
 
-    vTaskRightPx = Math.ceil((vMonthsDiff * ((pColWidth + QUARTER_CELL_MARGIN_WIDTH) / 3)) + (vDaysCrctn * (pColWidth / 90)) - 1);
+      vTaskRightPx = Math.ceil((vMonthsDiff * ((pColWidth + QUARTER_CELL_MARGIN_WIDTH) / 3)) + (vDaysCrctn * (pColWidth / 90)) - 1);
+    } else {
+      let vMonthsDiff = (12 * (curTaskEnd.getFullYear() - curTaskStart.getFullYear())) + (curTaskEnd.getMonth() - curTaskStart.getMonth());
+      vPosTmpDate = new Date(curTaskEnd.getTime());
+      vPosTmpDate.setDate(curTaskStart.getDate());
+      let vDaysCrctn = (curTaskEnd.getTime() - vPosTmpDate.getTime()) / (86400000);
+
+      vTaskRightPx = Math.ceil((vMonthsDiff * ((pColWidth + QUARTER_CELL_MARGIN_WIDTH) / 3)) + (vDaysCrctn * (pColWidth / 90)) - 1);
+    }
   }
   else if (pFormat == 'hour') {
     // can't just calculate sum because of daylight savings changes

@@ -424,11 +424,21 @@ export const GanttChart = function (pDiv, pFormat) {
           vTmpDate.setFullYear(vTmpDate.getFullYear() + 1, 0, 1);
         }
       } else if (this.vFormat == "quarter") {
-        vColSpan = 4 - Math.floor(vTmpDate.getMonth() / 3);
-        if (vTmpDate.getFullYear() == vMaxDate.getFullYear()) vColSpan -= 3 - Math.floor(vMaxDate.getMonth() / 3);
-        const vTmpCell = newNode(vTmpRow, "td", null, vHeaderCellClass, null, null, null, null, vColSpan);
-        newNode(vTmpCell, "div", null, null, formatDateStr(vTmpDate, this.vQuarterMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang), vColWidth * vColSpan);
-        vTmpDate.setFullYear(vTmpDate.getFullYear() + 1, 0, 1);
+        if (this.vLang === "fa") {
+          vColSpan = 4 - Math.floor(startTime.month() / 3);
+          if (startTime.year() == endTime.year()) vColSpan -= 3 - Math.floor(endTime.month() / 3);
+          const vTmpCell = newNode(vTmpRow, "td", null, vHeaderCellClass, null, null, null, null, vColSpan);
+          newNode(vTmpCell, "div", null, null, formatDateStr(startTime, this.vQuarterMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang), vColWidth * vColSpan);
+          startTime.add(1, 'year');
+          startTime.month(0);
+          startTime.date(1);
+        } else {
+          vColSpan = 4 - Math.floor(vTmpDate.getMonth() / 3);
+          if (vTmpDate.getFullYear() == vMaxDate.getFullYear()) vColSpan -= 3 - Math.floor(vMaxDate.getMonth() / 3);
+          const vTmpCell = newNode(vTmpRow, "td", null, vHeaderCellClass, null, null, null, null, vColSpan);
+          newNode(vTmpCell, "div", null, null, formatDateStr(vTmpDate, this.vQuarterMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang), vColWidth * vColSpan);
+          vTmpDate.setFullYear(vTmpDate.getFullYear() + 1, 0, 1);
+        }
       } else if (this.vFormat == "hour") {
         vColSpan = 24 - vTmpDate.getHours();
         if (vTmpDate.getFullYear() == vMaxDate.getFullYear() && vTmpDate.getMonth() == vMaxDate.getMonth() && vTmpDate.getDate() == vMaxDate.getDate()) vColSpan -= 23 - vMaxDate.getHours();
@@ -510,15 +520,29 @@ export const GanttChart = function (pDiv, pFormat) {
           }
         }
       } else if (this.vFormat == "quarter") {
-        if (vTmpDate <= vMaxDate) {
-          const vTmpCell = newNode(vTmpRow, "td", null, vMinorHeaderCellClass);
-          newNode(vTmpCell, "div", null, null, formatDateStr(vTmpDate, this.vQuarterMinorDateDisplayFormat, this.vLangs[this.vLang], this.vLang), vColWidth);
-          vNumCols++;
+        if (this.vLang === "fa") {
+          if (startTime <= endTime) {
+            const vTmpCell = newNode(vTmpRow, "td", null, vMinorHeaderCellClass);
+            newNode(vTmpCell, "div", null, null, formatDateStr(startTime.toDate(), this.vQuarterMinorDateDisplayFormat, this.vLangs[this.vLang], this.vLang), vColWidth);
+            vNumCols++;
+          }
+          
+          startTime.add(81, 'day');
+          
+          while (startTime.date() > 1) {
+            startTime.add(1, 'day');
+          }
+        } else {
+          if (vTmpDate <= vMaxDate) {
+            const vTmpCell = newNode(vTmpRow, "td", null, vMinorHeaderCellClass);
+            newNode(vTmpCell, "div", null, null, formatDateStr(vTmpDate, this.vQuarterMinorDateDisplayFormat, this.vLangs[this.vLang], this.vLang), vColWidth);
+            vNumCols++;
+          }
+
+          vTmpDate.setDate(vTmpDate.getDate() + 81);
+
+          while (vTmpDate.getDate() > 1) vTmpDate.setDate(vTmpDate.getDate() + 1);
         }
-
-        vTmpDate.setDate(vTmpDate.getDate() + 81);
-
-        while (vTmpDate.getDate() > 1) vTmpDate.setDate(vTmpDate.getDate() + 1);
       } else if (this.vFormat == "hour") {
         for (let i = vTmpDate.getHours(); i < 24; i++) {
           vTmpDate.setHours(i); //works around daylight savings but may look a little odd on days where the clock goes forward
