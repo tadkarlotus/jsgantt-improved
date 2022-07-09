@@ -446,12 +446,12 @@ export const createTaskInfo = function (pTask, templateStrOrFn = null) {
       if (this.vShowTaskInfoStartDate == 1) {
         vTmpDiv = newNode(vTaskInfo, 'div', null, 'gTILine gTIsd');
         newNode(vTmpDiv, 'span', null, 'gTaskLabel', this.vLangs[this.vLang]['startdate'] + ': ');
-        newNode(vTmpDiv, 'span', null, 'gTaskText', formatDateStr(pTask.getStart(), this.vDateTaskDisplayFormat, this.vLangs[this.vLang]));
+        newNode(vTmpDiv, 'span', null, 'gTaskText', formatDateStr(pTask.getStart(), this.vDateTaskDisplayFormat, this.vLangs[this.vLang], this.vLang));
       }
       if (this.vShowTaskInfoEndDate == 1) {
         vTmpDiv = newNode(vTaskInfo, 'div', null, 'gTILine gTIed');
         newNode(vTmpDiv, 'span', null, 'gTaskLabel', this.vLangs[this.vLang]['enddate'] + ': ');
-        newNode(vTmpDiv, 'span', null, 'gTaskText', formatDateStr(pTask.getEnd(), this.vDateTaskDisplayFormat, this.vLangs[this.vLang]));
+        newNode(vTmpDiv, 'span', null, 'gTaskText', formatDateStr(pTask.getEnd(), this.vDateTaskDisplayFormat, this.vLangs[this.vLang], this.vLang));
       }
       if (this.vShowTaskInfoDur == 1 && !pTask.getMile()) {
         vTmpDiv = newNode(vTaskInfo, 'div', null, 'gTILine gTId');

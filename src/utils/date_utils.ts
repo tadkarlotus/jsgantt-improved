@@ -3,7 +3,18 @@ import * as moment from 'jalali-moment';
 /**
  * DATES
  */
-export const getMinDate = function (pList, pFormat, pMinDate) {
+
+export const toStandardDate = function(date: Date) {
+  let mm = date.getMonth() + 1; // getMonth() is zero-based
+  let dd = date.getDate();
+
+  return [date.getFullYear(),
+    (mm>9 ? '' : '0') + mm,
+    (dd>9 ? '' : '0') + dd
+  ].join('-');
+};
+
+export const getMinDate = function (pList, pFormat, pMinDate, vLang) {
   let vDate = new Date();
   if (pList.length <= 0) return pMinDate || vDate;
 
@@ -28,10 +39,13 @@ export const getMinDate = function (pList, pFormat, pMinDate) {
     while (vDate.getDay() % 7 != 1) vDate.setDate(vDate.getDate() - 1);
   }
   else if (pFormat == 'month') {
-    vDate.setDate(vDate.getDate() - 15);
-    vPersianDate.date(vPersianDate.date() - 15);
-    while (vDate.getDate() > 1) vDate.setDate(vDate.getDate() - 1);
-    while (vPersianDate.date() > 1) vPersianDate.date(vPersianDate.date() - 1);
+    if (vLang === 'fa') {
+      vPersianDate.date(vPersianDate.date() - 15);
+      while (vPersianDate.date() > 1) vPersianDate.date(vPersianDate.date() - 1);
+    } else {
+      vDate.setDate(vDate.getDate() - 15);
+      while (vDate.getDate() > 1) vDate.setDate(vDate.getDate() - 1);
+    }
   }
   else if (pFormat == 'quarter') {
     vDate.setDate(vDate.getDate() - 31);
@@ -52,14 +66,14 @@ export const getMinDate = function (pList, pFormat, pMinDate) {
   if (pFormat == 'hour') vDate.setMinutes(0, 0);
   else vDate.setHours(0, 0, 0);
 
-  if (pFormat == 'month') {
+  if (vLang === 'fa') {
     return vPersianDate.toDate();
   } else {
     return (vDate);
   }
 };
 
-export const getMaxDate = function (pList, pFormat, pMaxDate) {
+export const getMaxDate = function (pList, pFormat, pMaxDate, vLang) {
   let vDate = new Date();
 
   if (pList.length <= 0) return pMaxDate || vDate;
@@ -88,11 +102,13 @@ export const getMaxDate = function (pList, pFormat, pMaxDate) {
   }
   else if (pFormat == 'month') {
     // Set to last day of current Month
-    while (vDate.getDate() > 1) vDate.setDate(vDate.getDate() + 1);
-    vDate.setDate(vDate.getDate() - 1);
-
-    while (vPersianDate.date() > 1) vPersianDate.date(vPersianDate.date() + 1);
-    vPersianDate.date(vPersianDate.date() - 1);
+    if (vLang === 'fa') {
+      while (vPersianDate.date() > 1) vPersianDate.date(vPersianDate.date() + 1);
+      vPersianDate.date(vPersianDate.date() - 1);
+    } else {
+      while (vDate.getDate() > 1) vDate.setDate(vDate.getDate() + 1);
+      vDate.setDate(vDate.getDate() - 1);
+    }
   }
   else if (pFormat == 'quarter') {
     // Set to last day of current Quarter
@@ -112,7 +128,7 @@ export const getMaxDate = function (pList, pFormat, pMaxDate) {
     while (vDate.getHours() % 6 != 5) vDate.setHours(vDate.getHours() + 1);
   }
 
-  if (pFormat == 'month') {
+  if (vLang === 'fa') {
     return vPersianDate.toDate();
   } else {
     return (vDate);
@@ -154,42 +170,37 @@ export const parseDateStr = function (pDateStr, pFormatStr) {
   return (vDate);
 };
 
-export const formatDateStr = function (pDate, pDateFormatArr, pL) {
+export const formatDateStr = function (pDate, pDateFormatArr, pL, vLang) {
   // Fix on issue #303 - getXMLTask is passing null as pDates
   if (!pDate) {
     return;
   }
+  
+  if (vLang === 'fa') {
+    return persianDateFormatStr(pDate, pDateFormatArr, pL);
+  }
   let vDateStr = '';
-
-  // let vYear2Str = pDate.getFullYear().toString().substring(2, 4);
-  let vYear2Str = moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').year().toString().substring(2, 4);
-  // let vMonthStr = (pDate.getMonth() + 1) + '';
-  let vMonthStr = (moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').month() + 1) + '';
+  
+  let vYear2Str = pDate.getFullYear().toString().substring(2, 4);
+  let vMonthStr = (pDate.getMonth() + 1) + '';
   let vMonthArr = new Array(pL['january'], pL['february'], pL['march'], pL['april'], pL['maylong'], pL['june'], pL['july'], pL['august'], pL['september'], pL['october'], pL['november'], pL['december']);
-  // let vMonthArr = new Array(pL['april'], pL['maylong'], pL['june'], pL['july'], pL['august'], pL['september'], pL['october'], pL['november'], pL['december'], pL['january'], pL['february'], pL['march']);
   let vDayArr = new Array(pL['sunday'], pL['monday'], pL['tuesday'], pL['wednesday'], pL['thursday'], pL['friday'], pL['saturday']);
-  // let vDayArr = new Array(pL['saturday'], pL['sunday'], pL['monday'], pL['tuesday'], pL['wednesday'], pL['thursday'], pL['friday']);
   let vMthArr = new Array(pL['jan'], pL['feb'], pL['mar'], pL['apr'], pL['may'], pL['jun'], pL['jul'], pL['aug'], pL['sep'], pL['oct'], pL['nov'], pL['dec']);
-  // let vMthArr = new Array(pL['apr'], pL['may'], pL['jun'], pL['jul'], pL['aug'], pL['sep'], pL['oct'], pL['nov'], pL['dec'], pL['jan'], pL['feb'], pL['mar']);
   let vDyArr = new Array(pL['sun'], pL['mon'], pL['tue'], pL['wed'], pL['thu'], pL['fri'], pL['sat']);
-  // let vDyArr = new Array(pL['sat'], pL['sun'], pL['mon'], pL['tue'], pL['wed'], pL['thu'], pL['fri']);
+  
 
   for (let i = 0; i < pDateFormatArr.length; i++) {
     switch (pDateFormatArr[i]) {
       case 'dd':
-         // if (pDate.getDate() < 10) vDateStr += '0'; // now fall through
-         if (moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').date() < 10) vDateStr += '0'; // now fall through
+        if (pDate.getDate() < 10) vDateStr += '0'; // now fall through
       case 'd':
-        // vDateStr += pDate.getDate();
-        vDateStr += moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').date()
+        vDateStr += pDate.getDate();
         break;
       case 'day':
-        // vDateStr += vDyArr[pDate.getDay()];
-        vDateStr += vDyArr[moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').day()];
+        vDateStr += vDyArr[pDate.getDay()];
         break;
       case 'DAY':
-        // vDateStr += vDayArr[pDate.getDay()];
-        vDateStr += vDayArr[moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').day()];
+        vDateStr += vDayArr[pDate.getDay()];
         break;
       case 'mm':
         if (parseInt(vMonthStr, 10) < 10) vDateStr += '0'; // now fall through
@@ -197,16 +208,13 @@ export const formatDateStr = function (pDate, pDateFormatArr, pL) {
         vDateStr += vMonthStr;
         break;
       case 'mon':
-        // vDateStr += vMthArr[pDate.getMonth()];
-        vDateStr += vMthArr[moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').month()];
+        vDateStr += vMthArr[pDate.getMonth()];
         break;
       case 'month':
-        // vDateStr += vMonthArr[pDate.getMonth()];
-        vDateStr += vMonthArr[moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').month()];
+        vDateStr += vMonthArr[pDate.getMonth()];
         break;
       case 'yyyy':
-        // vDateStr += pDate.getFullYear();
-        vDateStr += moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').year();
+        vDateStr += pDate.getFullYear();
         break;
       case 'yy':
         vDateStr += vYear2Str;
@@ -214,44 +222,34 @@ export const formatDateStr = function (pDate, pDateFormatArr, pL) {
       case 'qq':
         vDateStr += pL['qtr']; // now fall through
       case 'q':
-        // vDateStr += Math.floor(pDate.getMonth() / 3) + 1;
-        vDateStr += Math.floor(moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').month() / 3) + 1;
+        vDateStr += Math.floor(pDate.getMonth() / 3) + 1;
         break;
       case 'hh':
-        // if ((((pDate.getHours() % 12) == 0) ? 12 : pDate.getHours() % 12) < 10) vDateStr += '0'; // now fall through
-        if ((((moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').hours() % 12) == 0) ? 12 : moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').hours() % 12) < 10) vDateStr += '0'; // now fall through
+        if ((((pDate.getHours() % 12) == 0) ? 12 : pDate.getHours() % 12) < 10) vDateStr += '0'; // now fall through
       case 'h':
-        // vDateStr += ((pDate.getHours() % 12) == 0) ? 12 : pDate.getHours() % 12;
-        vDateStr += ((moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').hours() % 12) == 0) ? 12 : moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').hours() % 12;
+        vDateStr += ((pDate.getHours() % 12) == 0) ? 12 : pDate.getHours() % 12;
         break;
       case 'HH':
-        // if ((pDate.getHours()) < 10) vDateStr += '0'; // now fall through
-        if ((moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').hours()) < 10) vDateStr += '0'; // now fall through
+        if ((pDate.getHours()) < 10) vDateStr += '0'; // now fall through
       case 'H':
-        // vDateStr += (pDate.getHours());
-        vDateStr += (moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').hours());
+        vDateStr += (pDate.getHours());
         break;
       case 'MI':
-         // if (pDate.getMinutes() < 10) vDateStr += '0'; // now fall through
-         if (moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').minutes() < 10) vDateStr += '0'; // now fall through
+        if (pDate.getMinutes() < 10) vDateStr += '0'; // now fall through
       case 'mi':
-        // vDateStr += pDate.getMinutes();
-        vDateStr += moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').hours();
+        vDateStr += pDate.getMinutes();
         break;
       case 'SS':
-        if (moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').seconds() < 10)
+        if (pDate.getSeconds() < 10)
           vDateStr += '0'; // now fall through
       case 'ss':
-         // vDateStr += pDate.getSeconds();
-         vDateStr += moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').seconds();  
+        vDateStr += pDate.getSeconds();
         break;
       case 'pm':
-        // vDateStr += ((pDate.getHours()) < 12) ? 'am' : 'pm';
-        vDateStr += ((moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').hours()) < 12) ? 'am' : 'pm';
+        vDateStr += ((pDate.getHours()) < 12) ? 'am' : 'pm';
         break;
       case 'PM':
-        // vDateStr += ((pDate.getHours()) < 12) ? 'AM' : 'PM';
-        vDateStr += ((moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').hours()) < 12) ? 'AM' : 'PM';
+        vDateStr += ((pDate.getHours()) < 12) ? 'AM' : 'PM';
         break;
       case 'ww':
         if (getIsoWeek(pDate) < 10) vDateStr += '0'; // now fall through
@@ -260,10 +258,8 @@ export const formatDateStr = function (pDate, pDateFormatArr, pL) {
         break;
       case 'week':
         let vWeekNum = getIsoWeek(pDate);
-        // let vYear = pDate.getFullYear();
-        let vYear = moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').year();
-        // let vDayOfWeek = (pDate.getDay() == 0) ? 7 : pDate.getDay();
-        let vDayOfWeek = (moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').date() == 0) ? 7 : moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').date();
+        let vYear = pDate.getFullYear();
+        let vDayOfWeek = (pDate.getDay() == 0) ? 7 : pDate.getDay();
         if (vWeekNum >= 52 && parseInt(vMonthStr, 10) === 1) vYear--;
         if (vWeekNum == 1 && parseInt(vMonthStr, 10) === 12) vYear++;
         if (vWeekNum < 10) vWeekNum = parseInt('0' + vWeekNum, 10);
@@ -278,6 +274,101 @@ export const formatDateStr = function (pDate, pDateFormatArr, pL) {
   }
   return vDateStr;
 };
+
+const persianDateFormatStr = function (pDate, pDateFormatArr, pL) {
+  let vDateStr = '';
+  let vMonthArr = new Array(pL['january'], pL['february'], pL['march'], pL['april'], pL['maylong'], pL['june'], pL['july'], pL['august'], pL['september'], pL['october'], pL['november'], pL['december']);
+  let vDayArr = new Array(pL['sunday'], pL['monday'], pL['tuesday'], pL['wednesday'], pL['thursday'], pL['friday'], pL['saturday']);
+  let vMthArr = new Array(pL['jan'], pL['feb'], pL['mar'], pL['apr'], pL['may'], pL['jun'], pL['jul'], pL['aug'], pL['sep'], pL['oct'], pL['nov'], pL['dec']);
+  let vDyArr = new Array(pL['sun'], pL['mon'], pL['tue'], pL['wed'], pL['thu'], pL['fri'], pL['sat']);
+  let vYear2Str = moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').year().toString().substring(2, 4);
+  let vMonthStr = (moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').month() + 1) + '';
+
+  for (let i = 0; i < pDateFormatArr.length; i++) {
+    switch (pDateFormatArr[i]) {
+      case 'dd':
+        if (moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').date() < 10) vDateStr += '0'; // now fall through
+      case 'd':
+        vDateStr += moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').date()
+        break;
+      case 'day':
+        vDateStr += vDyArr[moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').day()];
+        break;
+      case 'DAY':
+        vDateStr += vDayArr[moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').day()];
+        break;
+      case 'mm':
+        if (parseInt(vMonthStr, 10) < 10) vDateStr += '0'; // now fall through
+      case 'm':
+        vDateStr += vMonthStr;
+        break;
+      case 'mon':
+        vDateStr += vMthArr[moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').month()];
+        break;
+      case 'month':
+        vDateStr += vMonthArr[moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').month()];
+        break;
+      case 'yyyy':
+        vDateStr += moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').year();
+        break;
+      case 'yy':
+        vDateStr += vYear2Str;
+        break;
+      case 'qq':
+        vDateStr += pL['qtr']; // now fall through
+      case 'q':
+        vDateStr += Math.floor(moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').month() / 3) + 1;
+        break;
+      case 'hh':
+        if ((((moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').hours() % 12) == 0) ? 12 : moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').hours() % 12) < 10) vDateStr += '0'; // now fall through
+      case 'h':
+        vDateStr += ((moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').hours() % 12) == 0) ? 12 : moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').hours() % 12;
+        break;
+      case 'HH':
+        if ((moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').hours()) < 10) vDateStr += '0'; // now fall through
+      case 'H':
+        vDateStr += (moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').hours());
+        break;
+      case 'MI':
+        if (moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').minutes() < 10) vDateStr += '0'; // now fall through
+      case 'mi':
+        vDateStr += moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').hours();
+        break;
+      case 'SS':
+        if (moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').seconds() < 10)
+          vDateStr += '0'; // now fall through
+      case 'ss':
+        vDateStr += moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').seconds();
+        break;
+      case 'pm':
+        vDateStr += ((moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').hours()) < 12) ? 'am' : 'pm';
+        break;
+      case 'PM':
+        vDateStr += ((moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').hours()) < 12) ? 'AM' : 'PM';
+        break;
+      case 'ww':
+        if (getIsoWeek(pDate, 'fa') < 10) vDateStr += '0'; // now fall through
+      case 'w':
+        vDateStr += getIsoWeek(pDate, 'fa');
+        break;
+      case 'week':
+        let vWeekNum = getIsoWeek(pDate, 'fa');
+        let vYear = moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').year();
+        let vDayOfWeek = (moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').date() == 0) ? 7 : moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').date();
+        if (vWeekNum >= 52 && parseInt(vMonthStr, 10) === 1) vYear--;
+        if (vWeekNum == 1 && parseInt(vMonthStr, 10) === 12) vYear++;
+        if (vWeekNum < 10) vWeekNum = parseInt('0' + vWeekNum, 10);
+
+        vDateStr += vYear + '-W' + vWeekNum + '-' + vDayOfWeek;
+        break;
+      default:
+        if (pL[pDateFormatArr[i].toLowerCase()]) vDateStr += pL[pDateFormatArr[i].toLowerCase()];
+        else vDateStr += pDateFormatArr[i];
+        break;
+    }
+  }
+  return vDateStr;
+}
 
 export const parseDateFormatStr = function (pFormatStr) {
   let vComponantStr = '';
@@ -310,22 +401,28 @@ export const parseDateFormatStr = function (pFormatStr) {
  * 60*60*24*1000=86400000
  * @param pDate 
  */
-export const getIsoWeek = function (pDate) {
-  let dayMiliseconds = 86400000;
-  let keyDay = new Date(pDate.getFullYear(), 0, 4, 0, 0, 0);
-  let keyDayOfWeek = (keyDay.getDay() == 0) ? 6 : keyDay.getDay() - 1; // define monday as 0
-  let firstMondayYearTime = keyDay.getTime() - (keyDayOfWeek * dayMiliseconds);
-  let thisDate = new Date(pDate.getFullYear(), pDate.getMonth(), pDate.getDate(), 0, 0, 0); // This at 00:00:00
-  let thisTime = thisDate.getTime();
-  let daysFromFirstMonday = Math.round(((thisTime - firstMondayYearTime) / dayMiliseconds));
-  let lastWeek = 99;
-  let thisWeek = 99;
+export const getIsoWeek = function (pDate, vLang = 'en') {
+  // TODO: Persian iso week should be calculated here by vLang argument
+  if (vLang === 'fa') {
+    
+  } else {
+    let dayMiliseconds = 86400000;
+    let keyDay = new Date(pDate.getFullYear(), 0, 4, 0, 0, 0);
+    let keyDayOfWeek = (keyDay.getDay() == 0) ? 6 : keyDay.getDay() - 1; // define monday as 0
+    let firstMondayYearTime = keyDay.getTime() - (keyDayOfWeek * dayMiliseconds);
+    let thisDate = new Date(pDate.getFullYear(), pDate.getMonth(), pDate.getDate(), 0, 0, 0); // This at 00:00:00
+    let thisTime = thisDate.getTime();
+    let daysFromFirstMonday = Math.round(((thisTime - firstMondayYearTime) / dayMiliseconds));
+    let lastWeek = 99;
+    let thisWeek = 99;
 
-  let firstMondayYear = new Date(firstMondayYearTime);
+    let firstMondayYear = new Date(firstMondayYearTime);
 
-  thisWeek = Math.ceil((daysFromFirstMonday + 1) / 7);
+    thisWeek = Math.ceil((daysFromFirstMonday + 1) / 7);
 
-  if (thisWeek <= 0) thisWeek = getIsoWeek(new Date(pDate.getFullYear() - 1, 11, 31, 0, 0, 0));
-  else if (thisWeek == 53 && (new Date(pDate.getFullYear(), 0, 1, 0, 0, 0)).getDay() != 4 && (new Date(pDate.getFullYear(), 11, 31, 0, 0, 0)).getDay() != 4) thisWeek = 1;
-  return thisWeek;
+    if (thisWeek <= 0) thisWeek = getIsoWeek(new Date(pDate.getFullYear() - 1, 11, 31, 0, 0, 0));
+    else if (thisWeek == 53 && (new Date(pDate.getFullYear(), 0, 1, 0, 0, 0)).getDay() != 4 && (new Date(pDate.getFullYear(), 11, 31, 0, 0, 0)).getDay() != 4) thisWeek = 1;
+    return thisWeek;
+  }
 };
+

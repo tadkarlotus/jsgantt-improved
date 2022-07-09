@@ -58,7 +58,7 @@ export const draw_header = function (column, i, vTmpRow, vTaskList, vEditable, v
   }
   if ('vShowStartDate' === column) {
     vTmpCell = newNode(vTmpRow, 'td', null, 'gstartdate');
-    const v = formatDateStr(vTaskList[i].getStartVar(), vDateTaskTableDisplayFormat, vLangs[vLang]);
+    const v = formatDateStr(vTaskList[i].getStartVar(), vDateTaskTableDisplayFormat, vLangs[vLang], this.vLang);
     const text = makeInput(v, vEditable, 'date', vTaskList[i].getStartVar());
     vTmpDiv = newNode(vTmpCell, 'div', null, null, text);
     const callback = (task, e) => task.setStart(e.target.value);
@@ -67,7 +67,7 @@ export const draw_header = function (column, i, vTmpRow, vTaskList, vEditable, v
   }
   if ('vShowEndDate' === column) {
     vTmpCell = newNode(vTmpRow, 'td', null, 'genddate');
-    const v = formatDateStr(vTaskList[i].getEndVar(), vDateTaskTableDisplayFormat, vLangs[vLang]);
+    const v = formatDateStr(vTaskList[i].getEndVar(), vDateTaskTableDisplayFormat, vLangs[vLang], this.vLang);
     const text = makeInput(v, vEditable, 'date', vTaskList[i].getEndVar());
     vTmpDiv = newNode(vTmpCell, 'div', null, null, text);
     const callback = (task, e) => task.setEnd(e.target.value);
@@ -76,7 +76,7 @@ export const draw_header = function (column, i, vTmpRow, vTaskList, vEditable, v
   }
   if ('vShowPlanStartDate' === column) {
     vTmpCell = newNode(vTmpRow, 'td', null, 'gplanstartdate');
-    const v = vTaskList[i].getPlanStart() ? formatDateStr(vTaskList[i].getPlanStart(), vDateTaskTableDisplayFormat, vLangs[vLang]) : '';
+    const v = vTaskList[i].getPlanStart() ? formatDateStr(vTaskList[i].getPlanStart(), vDateTaskTableDisplayFormat, vLangs[vLang], this.vLang) : '';
     const text = makeInput(v, vEditable, 'date', vTaskList[i].getPlanStart());
     vTmpDiv = newNode(vTmpCell, 'div', null, null, text);
     const callback = (task, e) => task.setPlanStart(e.target.value);
@@ -85,7 +85,7 @@ export const draw_header = function (column, i, vTmpRow, vTaskList, vEditable, v
   }
   if ('vShowPlanEndDate' === column) {
     vTmpCell = newNode(vTmpRow, 'td', null, 'gplanenddate');
-    const v = vTaskList[i].getPlanEnd() ? formatDateStr(vTaskList[i].getPlanEnd(), vDateTaskTableDisplayFormat, vLangs[vLang]) : '';
+    const v = vTaskList[i].getPlanEnd() ? formatDateStr(vTaskList[i].getPlanEnd(), vDateTaskTableDisplayFormat, vLangs[vLang], this.vLang) : '';
     const text = makeInput(v, vEditable, 'date', vTaskList[i].getPlanEnd());
     vTmpDiv = newNode(vTmpCell, 'div', null, null, text);
     const callback = (task, e) => task.setPlanEnd(e.target.value);
