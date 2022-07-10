@@ -20,6 +20,8 @@ function start(e) {
 
     // SET LANG FROM INPUT
     lang = e && e.target ? e.target.value : "en";
+    lang === 'fa' ? g.vMonthDaysArr = new Array(31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29)
+                  : g.vMonthDaysArr = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
     delay = document.getElementById("delay").value;
 
     vUseSingleCell = document.getElementById("useSingleCell").value;

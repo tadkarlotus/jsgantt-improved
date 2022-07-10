@@ -31,8 +31,13 @@ export const getMinDate = function (pList, pFormat, pMinDate, vLang) {
 
   // Adjust min date to specific format boundaries (first of week or first of month)
   if (pFormat == 'day') {
-    vDate.setDate(vDate.getDate() - 1);
-    while (vDate.getDay() % 7 != 1) vDate.setDate(vDate.getDate() - 1);
+    if (vLang === 'fa') {
+      vPersianDate.date(vPersianDate.date() - 1);
+      while ((vPersianDate.weekday() + 1) % 7 != 1) vPersianDate.date(vPersianDate.date() - 1);
+    } else {
+      vDate.setDate(vDate.getDate() - 1);
+      while (vDate.getDay() % 7 != 1) vDate.setDate(vDate.getDate() - 1);
+    }
   }
   else if (pFormat == 'week') {
     if (vLang === 'fa') {
@@ -113,8 +118,13 @@ export const getMaxDate = function (pList, pFormat, pMaxDate, vLang) {
 
   // Adjust max date to specific format boundaries (end of week or end of month)
   if (pFormat == 'day') {
-    vDate.setDate(vDate.getDate() + 1);
-    while (vDate.getDay() % 7 != 0) vDate.setDate(vDate.getDate() + 1);
+    if (vLang === 'fa') {
+      vPersianDate.date(vPersianDate.date() + 1);
+      while ((vPersianDate.weekday() + 1) % 7 != 0) vPersianDate.date(vPersianDate.date() + 1);
+    } else {
+      vDate.setDate(vDate.getDate() + 1);
+      while (vDate.getDay() % 7 != 0) vDate.setDate(vDate.getDate() + 1);
+    }
   }
   else if (pFormat == 'week') {
     //For weeks, what is the last logical boundary?

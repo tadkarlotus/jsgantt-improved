@@ -134,7 +134,6 @@ export const GanttChart = function (pDiv, pFormat) {
   this.vDepId = 1;
   this.vTaskList = new Array();
   this.vFormatArr = new Array("hour", "day", "week", "month", "quarter");
-  this.vMonthDaysArr = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
   this.vProcessNeeded = true;
   this.vMinGpLen = 8;
   this.vScrollTo = "";
@@ -147,6 +146,7 @@ export const GanttChart = function (pDiv, pFormat) {
   this.vTodayPx = -1;
   this.vLangs = lang;
   this.vLang = navigator.language && navigator.language in lang ? navigator.language : "en";
+  this.vMonthDaysArr = this.vLang === 'fa' ? new Array(31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29) : new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
   this.vChartBody = null;
   this.vChartHead = null;
   this.vListBody = null;
@@ -402,14 +402,26 @@ export const GanttChart = function (pDiv, pFormat) {
         }
 
         let vTmpCell = newNode(vTmpRow, "td", null, vHeaderCellClass, null, null, null, null, colspan);
-        vCellContents += formatDateStr(vTmpDate, this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
-        vTmpDate.setDate(vTmpDate.getDate() + 6);
+        if (this.vLang === "fa") {
+          // vCellContents += formatDateStr(startTime.toDate(), this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
+          vCellContents += formatDateStr(startTime.toDate(), parseDateFormatStr("yy/mm"), this.vLangs[this.vLang], this.vLang)
+          startTime.add(6, 'day');
 
-        if (this.vShowEndWeekDate == 1) vCellContents += " - " + formatDateStr(vTmpDate, this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
+          // if (this.vShowEndWeekDate == 1) vCellContents += " - " + formatDateStr(startTime.toDate(), this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
+          if (this.vShowEndWeekDate == 1) vCellContents += " - " + formatDateStr(startTime.toDate(), parseDateFormatStr("yy/mm"), this.vLangs[this.vLang], this.vLang);
+          newNode(vTmpCell, "div", null, null, vCellContents, vColWidth * colspan);
+          startTime.add(1, 'day');
+        } else {
+          // vCellContents += formatDateStr(vTmpDate, this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
+          vCellContents += formatDateStr(vTmpDate, parseDateFormatStr("yy/mm"), this.vLangs[this.vLang], this.vLang);
+          vTmpDate.setDate(vTmpDate.getDate() + 6);
 
-        newNode(vTmpCell, "div", null, null, vCellContents, vColWidth * colspan);
+          // if (this.vShowEndWeekDate == 1) vCellContents += " - " + formatDateStr(vTmpDate, this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
+          if (this.vShowEndWeekDate == 1) vCellContents += " - " + formatDateStr(vTmpDate, parseDateFormatStr("yy/mm"), this.vLangs[this.vLang], this.vLang);
 
-        vTmpDate.setDate(vTmpDate.getDate() + 1);
+          newNode(vTmpCell, "div", null, null, vCellContents, vColWidth * colspan);
+          vTmpDate.setDate(vTmpDate.getDate() + 1);
+        }
       } else if (this.vFormat == "week") {
         if (this.vLang === "fa") {
           const vTmpCell = newNode(vTmpRow, "td", null, vHeaderCellClass, null, vColWidth);
@@ -485,21 +497,40 @@ export const GanttChart = function (pDiv, pFormat) {
       let vMinorHeaderCellClass = "gminorheading";
 
       if (this.vFormat == "day") {
-        if (vTmpDate.getDay() % 6 == 0) {
-          if (!this.vShowWeekends) {
-            vTmpDate.setDate(vTmpDate.getDate() + 1);
-            continue;
+        if (this.vLang === "fa") {
+          if ((startTime.weekday() + 1) % 6 == 0) {
+            if (!this.vShowWeekends) {
+              startTime.add(1, 'day');
+              
+              continue;
+            }
+            vMinorHeaderCellClass += "wkend";
           }
-          vMinorHeaderCellClass += "wkend";
-        }
 
-        if (vTmpDate <= vMaxDate) {
-          const vTmpCell = newNode(vTmpRow, "td", null, vMinorHeaderCellClass);
-          newNode(vTmpCell, "div", null, null, formatDateStr(vTmpDate, this.vDayMinorDateDisplayFormat, this.vLangs[this.vLang], this.vLang), vColWidth);
-          vNumCols++;
-        }
+          if (startTime <= endTime) {
+            const vTmpCell = newNode(vTmpRow, "td", null, vMinorHeaderCellClass);
+            newNode(vTmpCell, "div", null, null, formatDateStr(startTime.toDate(), this.vDayMinorDateDisplayFormat, this.vLangs[this.vLang], this.vLang), vColWidth);
+            vNumCols++;
+          }
 
-        vTmpDate.setDate(vTmpDate.getDate() + 1);
+          startTime.add(1, 'day');
+        } else {
+          if (vTmpDate.getDay() % 6 == 0) {
+            if (!this.vShowWeekends) {
+              vTmpDate.setDate(vTmpDate.getDate() + 1);
+              continue;
+            }
+            vMinorHeaderCellClass += "wkend";
+          }
+
+          if (vTmpDate <= vMaxDate) {
+            const vTmpCell = newNode(vTmpRow, "td", null, vMinorHeaderCellClass);
+            newNode(vTmpCell, "div", null, null, formatDateStr(vTmpDate, this.vDayMinorDateDisplayFormat, this.vLangs[this.vLang], this.vLang), vColWidth);
+            vNumCols++;
+          }
+
+          vTmpDate.setDate(vTmpDate.getDate() + 1);
+        }
       } else if (this.vFormat == "week") {
         if (this.vLang === "fa") {
           if (startTime <= endTime) {

@@ -121,7 +121,6 @@ exports.GanttChart = function (pDiv, pFormat) {
     this.vDepId = 1;
     this.vTaskList = new Array();
     this.vFormatArr = new Array("hour", "day", "week", "month", "quarter");
-    this.vMonthDaysArr = new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
     this.vProcessNeeded = true;
     this.vMinGpLen = 8;
     this.vScrollTo = "";
@@ -134,6 +133,8 @@ exports.GanttChart = function (pDiv, pFormat) {
     this.vTodayPx = -1;
     this.vLangs = lang;
     this.vLang = navigator.language && navigator.language in lang ? navigator.language : "en";
+    // TODO: Persian
+    this.vMonthDaysArr = this.vLang === 'fa' ? new Array(31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29) : new Array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
     this.vChartBody = null;
     this.vChartHead = null;
     this.vListBody = null;
@@ -357,12 +358,26 @@ exports.GanttChart = function (pDiv, pFormat) {
                     colspan = 5;
                 }
                 var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, vHeaderCellClass, null, null, null, null, colspan);
-                vCellContents += date_utils_1.formatDateStr(vTmpDate, this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
-                vTmpDate.setDate(vTmpDate.getDate() + 6);
-                if (this.vShowEndWeekDate == 1)
-                    vCellContents += " - " + date_utils_1.formatDateStr(vTmpDate, this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
-                draw_utils_1.newNode(vTmpCell, "div", null, null, vCellContents, vColWidth * colspan);
-                vTmpDate.setDate(vTmpDate.getDate() + 1);
+                if (this.vLang === "fa") {
+                    // vCellContents += formatDateStr(startTime.toDate(), this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
+                    vCellContents += date_utils_1.formatDateStr(startTime.toDate(), date_utils_1.parseDateFormatStr("yy/mm"), this.vLangs[this.vLang], this.vLang);
+                    startTime.add(6, 'day');
+                    // if (this.vShowEndWeekDate == 1) vCellContents += " - " + formatDateStr(startTime.toDate(), this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
+                    if (this.vShowEndWeekDate == 1)
+                        vCellContents += " - " + date_utils_1.formatDateStr(startTime.toDate(), date_utils_1.parseDateFormatStr("yy/mm"), this.vLangs[this.vLang], this.vLang);
+                    draw_utils_1.newNode(vTmpCell, "div", null, null, vCellContents, vColWidth * colspan);
+                    startTime.add(1, 'day');
+                }
+                else {
+                    // vCellContents += formatDateStr(vTmpDate, this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
+                    vCellContents += date_utils_1.formatDateStr(vTmpDate, date_utils_1.parseDateFormatStr("yy/mm"), this.vLangs[this.vLang], this.vLang);
+                    vTmpDate.setDate(vTmpDate.getDate() + 6);
+                    // if (this.vShowEndWeekDate == 1) vCellContents += " - " + formatDateStr(vTmpDate, this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
+                    if (this.vShowEndWeekDate == 1)
+                        vCellContents += " - " + date_utils_1.formatDateStr(vTmpDate, date_utils_1.parseDateFormatStr("yy/mm"), this.vLangs[this.vLang], this.vLang);
+                    draw_utils_1.newNode(vTmpCell, "div", null, null, vCellContents, vColWidth * colspan);
+                    vTmpDate.setDate(vTmpDate.getDate() + 1);
+                }
             }
             else if (this.vFormat == "week") {
                 if (this.vLang === "fa") {
@@ -446,19 +461,36 @@ exports.GanttChart = function (pDiv, pFormat) {
             }
             var vMinorHeaderCellClass = "gminorheading";
             if (this.vFormat == "day") {
-                if (vTmpDate.getDay() % 6 == 0) {
-                    if (!this.vShowWeekends) {
-                        vTmpDate.setDate(vTmpDate.getDate() + 1);
-                        continue;
+                if (this.vLang === "fa") {
+                    if ((startTime.weekday() + 1) % 6 == 0) {
+                        if (!this.vShowWeekends) {
+                            startTime.add(1, 'day');
+                            continue;
+                        }
+                        vMinorHeaderCellClass += "wkend";
                     }
-                    vMinorHeaderCellClass += "wkend";
+                    if (startTime <= endTime) {
+                        var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, vMinorHeaderCellClass);
+                        draw_utils_1.newNode(vTmpCell, "div", null, null, date_utils_1.formatDateStr(startTime.toDate(), this.vDayMinorDateDisplayFormat, this.vLangs[this.vLang], this.vLang), vColWidth);
+                        vNumCols++;
+                    }
+                    startTime.add(1, 'day');
                 }
-                if (vTmpDate <= vMaxDate) {
-                    var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, vMinorHeaderCellClass);
-                    draw_utils_1.newNode(vTmpCell, "div", null, null, date_utils_1.formatDateStr(vTmpDate, this.vDayMinorDateDisplayFormat, this.vLangs[this.vLang], this.vLang), vColWidth);
-                    vNumCols++;
+                else {
+                    if (vTmpDate.getDay() % 6 == 0) {
+                        if (!this.vShowWeekends) {
+                            vTmpDate.setDate(vTmpDate.getDate() + 1);
+                            continue;
+                        }
+                        vMinorHeaderCellClass += "wkend";
+                    }
+                    if (vTmpDate <= vMaxDate) {
+                        var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, vMinorHeaderCellClass);
+                        draw_utils_1.newNode(vTmpCell, "div", null, null, date_utils_1.formatDateStr(vTmpDate, this.vDayMinorDateDisplayFormat, this.vLangs[this.vLang], this.vLang), vColWidth);
+                        vNumCols++;
+                    }
+                    vTmpDate.setDate(vTmpDate.getDate() + 1);
                 }
-                vTmpDate.setDate(vTmpDate.getDate() + 1);
             }
             else if (this.vFormat == "week") {
                 if (this.vLang === "fa") {
@@ -4301,9 +4333,16 @@ exports.getMinDate = function (pList, pFormat, pMinDate, vLang) {
     var vPersianDate = moment(vDate);
     // Adjust min date to specific format boundaries (first of week or first of month)
     if (pFormat == 'day') {
-        vDate.setDate(vDate.getDate() - 1);
-        while (vDate.getDay() % 7 != 1)
+        if (vLang === 'fa') {
+            vPersianDate.date(vPersianDate.date() - 1);
+            while ((vPersianDate.weekday() + 1) % 7 != 1)
+                vPersianDate.date(vPersianDate.date() - 1);
+        }
+        else {
             vDate.setDate(vDate.getDate() - 1);
+            while (vDate.getDay() % 7 != 1)
+                vDate.setDate(vDate.getDate() - 1);
+        }
     }
     else if (pFormat == 'week') {
         if (vLang === 'fa') {
@@ -4393,9 +4432,16 @@ exports.getMaxDate = function (pList, pFormat, pMaxDate, vLang) {
     var vPersianDate = moment(vDate);
     // Adjust max date to specific format boundaries (end of week or end of month)
     if (pFormat == 'day') {
-        vDate.setDate(vDate.getDate() + 1);
-        while (vDate.getDay() % 7 != 0)
+        if (vLang === 'fa') {
+            vPersianDate.date(vPersianDate.date() + 1);
+            while ((vPersianDate.weekday() + 1) % 7 != 0)
+                vPersianDate.date(vPersianDate.date() + 1);
+        }
+        else {
             vDate.setDate(vDate.getDate() + 1);
+            while (vDate.getDay() % 7 != 0)
+                vDate.setDate(vDate.getDate() + 1);
+        }
     }
     else if (pFormat == 'week') {
         //For weeks, what is the last logical boundary?
@@ -5096,17 +5142,32 @@ exports.getOffset = function (pStartDate, pEndDate, pColWidth, pFormat, pShowWee
     var vPosTmpDate;
     if (pFormat == 'day') {
         if (!pShowWeekends) {
-            var start = curTaskStart;
-            var end = curTaskEnd;
-            var countWeekends = 0;
-            while (start < end) {
-                var day = start.getDay();
-                if (day === 6 || day == 0) {
-                    countWeekends++;
+            if (vLang == 'fa') {
+                var start = moment(curTaskStart);
+                var end = moment(curTaskEnd);
+                var countWeekends = 0;
+                while (start < end) {
+                    var day = start.weekday() + 1;
+                    if (day === 6 || day == 0) {
+                        countWeekends++;
+                    }
+                    start = moment(start.milliseconds() + 24 * oneHour);
                 }
-                start = new Date(start.getTime() + 24 * oneHour);
+                vTaskRight -= countWeekends * 24;
             }
-            vTaskRight -= countWeekends * 24;
+            else {
+                var start = curTaskStart;
+                var end = curTaskEnd;
+                var countWeekends = 0;
+                while (start < end) {
+                    var day = start.getDay();
+                    if (day === 6 || day == 0) {
+                        countWeekends++;
+                    }
+                    start = new Date(start.getTime() + 24 * oneHour);
+                }
+                vTaskRight -= countWeekends * 24;
+            }
         }
         vTaskRightPx = Math.ceil((vTaskRight / 24) * (pColWidth + DAY_CELL_MARGIN_WIDTH) - 1);
     }

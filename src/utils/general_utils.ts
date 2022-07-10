@@ -168,17 +168,31 @@ export const getOffset = function (pStartDate, pEndDate, pColWidth, pFormat, pSh
   let vPosTmpDate;
   if (pFormat == 'day') {
     if (!pShowWeekends) {
-      let start = curTaskStart;
-      let end = curTaskEnd;
-      let countWeekends = 0;
-      while (start < end) {
-        const day = start.getDay();
-        if (day === 6 || day == 0) {
-          countWeekends++
+      if (vLang == 'fa') {
+        let start = moment(curTaskStart);
+        let end = moment(curTaskEnd);
+        let countWeekends = 0;
+        while (start < end) {
+          const day = start.weekday() + 1;
+          if (day === 6 || day == 0) {
+            countWeekends++
+          }
+          start = moment(start.milliseconds() + 24 * oneHour);
         }
-        start = new Date(start.getTime() + 24 * oneHour);
+        vTaskRight -= countWeekends * 24;
+      } else {
+        let start = curTaskStart;
+        let end = curTaskEnd;
+        let countWeekends = 0;
+        while (start < end) {
+          const day = start.getDay();
+          if (day === 6 || day == 0) {
+            countWeekends++
+          }
+          start = new Date(start.getTime() + 24 * oneHour);
+        }
+        vTaskRight -= countWeekends * 24;
       }
-      vTaskRight -= countWeekends * 24;
     }
     vTaskRightPx = Math.ceil((vTaskRight / 24) * (pColWidth + DAY_CELL_MARGIN_WIDTH) - 1);
   }
