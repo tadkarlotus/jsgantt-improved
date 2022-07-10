@@ -35,8 +35,13 @@ export const getMinDate = function (pList, pFormat, pMinDate, vLang) {
     while (vDate.getDay() % 7 != 1) vDate.setDate(vDate.getDate() - 1);
   }
   else if (pFormat == 'week') {
-    vDate.setDate(vDate.getDate() - 1);
-    while (vDate.getDay() % 7 != 1) vDate.setDate(vDate.getDate() - 1);
+    if (vLang === 'fa') {
+      vPersianDate.date(vPersianDate.date() - 1);
+      while ((vPersianDate.weekday() + 1) % 7 != 1) vPersianDate.date(vPersianDate.date() - 1);
+    } else {
+      vDate.setDate(vDate.getDate() - 1);
+      while (vDate.getDay() % 7 != 1) vDate.setDate(vDate.getDate() - 1);
+    }
   }
   else if (pFormat == 'month') {
     if (vLang === 'fa') {
@@ -48,15 +53,32 @@ export const getMinDate = function (pList, pFormat, pMinDate, vLang) {
     }
   }
   else if (pFormat == 'quarter') {
-    vDate.setDate(vDate.getDate() - 31);
-    if (vDate.getMonth() == 0 || vDate.getMonth() == 1 || vDate.getMonth() == 2)
-      vDate.setFullYear(vDate.getFullYear(), 0, 1);
-    else if (vDate.getMonth() == 3 || vDate.getMonth() == 4 || vDate.getMonth() == 5)
-      vDate.setFullYear(vDate.getFullYear(), 3, 1);
-    else if (vDate.getMonth() == 6 || vDate.getMonth() == 7 || vDate.getMonth() == 8)
-      vDate.setFullYear(vDate.getFullYear(), 6, 1);
-    else if (vDate.getMonth() == 9 || vDate.getMonth() == 10 || vDate.getMonth() == 11)
-      vDate.setFullYear(vDate.getFullYear(), 9, 1);
+    if (vLang === 'fa') {
+      vPersianDate.date(vPersianDate.date() - 31);
+      if (vPersianDate.month() == 0 || vPersianDate.month() == 1 || vPersianDate.month() == 2) {
+        vPersianDate.month(0);
+        vPersianDate.date(1);
+      } else if (vPersianDate.month() == 3 || vPersianDate.month() == 4 || vPersianDate.month() == 5) {
+        vPersianDate.month(3);
+        vPersianDate.date(1);
+      } else if (vPersianDate.month() == 6 || vPersianDate.month() == 7 || vPersianDate.month() == 8) {
+        vPersianDate.month(6);
+        vPersianDate.date(1);
+      } else if (vPersianDate.month() == 9 || vPersianDate.month() == 10 || vPersianDate.month() == 11) {
+        vPersianDate.month(9);
+        vPersianDate.date(1);
+      }
+    } else {
+      vDate.setDate(vDate.getDate() - 31);
+      if (vDate.getMonth() == 0 || vDate.getMonth() == 1 || vDate.getMonth() == 2)
+        vDate.setFullYear(vDate.getFullYear(), 0, 1);
+      else if (vDate.getMonth() == 3 || vDate.getMonth() == 4 || vDate.getMonth() == 5)
+        vDate.setFullYear(vDate.getFullYear(), 3, 1);
+      else if (vDate.getMonth() == 6 || vDate.getMonth() == 7 || vDate.getMonth() == 8)
+        vDate.setFullYear(vDate.getFullYear(), 6, 1);
+      else if (vDate.getMonth() == 9 || vDate.getMonth() == 10 || vDate.getMonth() == 11)
+        vDate.setFullYear(vDate.getFullYear(), 9, 1);
+    }
   }
   else if (pFormat == 'hour') {
     vDate.setHours(vDate.getHours() - 1);
@@ -96,9 +118,15 @@ export const getMaxDate = function (pList, pFormat, pMaxDate, vLang) {
   }
   else if (pFormat == 'week') {
     //For weeks, what is the last logical boundary?
-    vDate.setDate(vDate.getDate() + 1);
+    if (vLang === 'fa') {
+      vPersianDate.date(vPersianDate.date() + 1);
 
-    while (vDate.getDay() % 7 != 0) vDate.setDate(vDate.getDate() + 1);
+      while ((vPersianDate.weekday() + 1) % 7 != 0) vPersianDate.date(vPersianDate.date() + 1);
+    } else {
+      vDate.setDate(vDate.getDate() + 1);
+
+      while (vDate.getDay() % 7 != 0) vDate.setDate(vDate.getDate() + 1);
+    }
   }
   else if (pFormat == 'month') {
     // Set to last day of current Month
@@ -111,15 +139,32 @@ export const getMaxDate = function (pList, pFormat, pMaxDate, vLang) {
     }
   }
   else if (pFormat == 'quarter') {
-    // Set to last day of current Quarter
-    if (vDate.getMonth() == 0 || vDate.getMonth() == 1 || vDate.getMonth() == 2)
-      vDate.setFullYear(vDate.getFullYear(), 2, 31);
-    else if (vDate.getMonth() == 3 || vDate.getMonth() == 4 || vDate.getMonth() == 5)
-      vDate.setFullYear(vDate.getFullYear(), 5, 30);
-    else if (vDate.getMonth() == 6 || vDate.getMonth() == 7 || vDate.getMonth() == 8)
-      vDate.setFullYear(vDate.getFullYear(), 8, 30);
-    else if (vDate.getMonth() == 9 || vDate.getMonth() == 10 || vDate.getMonth() == 11)
-      vDate.setFullYear(vDate.getFullYear(), 11, 31);
+    if (vLang === 'fa') {
+      // Set to last day of current Quarter
+      if (vPersianDate.month() == 0 || vPersianDate.month() == 1 || vPersianDate.month() == 2) {
+        vPersianDate.month(2);
+        vPersianDate.date(31);
+      } else if (vPersianDate.month() == 3 || vPersianDate.month() == 4 || vPersianDate.month() == 5) {
+        vPersianDate.month(5);
+        vPersianDate.date(31);
+      } else if (vPersianDate.month() == 6 || vPersianDate.month() == 7 || vPersianDate.month() == 8) {
+        vPersianDate.month(8);
+        vPersianDate.date(30);
+      } else if (vPersianDate.month() == 9 || vPersianDate.month() == 10) {
+        vPersianDate.month(11);
+        vPersianDate.date(29);
+      }
+    } else {
+      // Set to last day of current Quarter
+      if (vDate.getMonth() == 0 || vDate.getMonth() == 1 || vDate.getMonth() == 2)
+        vDate.setFullYear(vDate.getFullYear(), 2, 31);
+      else if (vDate.getMonth() == 3 || vDate.getMonth() == 4 || vDate.getMonth() == 5)
+        vDate.setFullYear(vDate.getFullYear(), 5, 30);
+      else if (vDate.getMonth() == 6 || vDate.getMonth() == 7 || vDate.getMonth() == 8)
+        vDate.setFullYear(vDate.getFullYear(), 8, 30);
+      else if (vDate.getMonth() == 9 || vDate.getMonth() == 10 || vDate.getMonth() == 11)
+        vDate.setFullYear(vDate.getFullYear(), 11, 31);
+    }
   }
   else if (pFormat == 'hour') {
     if (vDate.getHours() == 0) vDate.setDate(vDate.getDate() + 1);
@@ -404,7 +449,7 @@ export const parseDateFormatStr = function (pFormatStr) {
 export const getIsoWeek = function (pDate, vLang = 'en') {
   // TODO: Persian iso week should be calculated here by vLang argument
   if (vLang === 'fa') {
-    
+    return moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').isoWeek();
   } else {
     let dayMiliseconds = 86400000;
     let keyDay = new Date(pDate.getFullYear(), 0, 4, 0, 0, 0);

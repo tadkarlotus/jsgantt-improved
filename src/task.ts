@@ -1,6 +1,8 @@
 import { isIE, stripUnwanted, internalPropertiesLang, hashKey, internalProperties } from "./utils/general_utils";
 import { newNode } from "./utils/draw_utils";
 import { parseDateStr, formatDateStr } from "./utils/date_utils";
+import * as moment from 'jalali-moment';
+
 declare let g: any;
 
 // function to open window to display task link
@@ -248,21 +250,21 @@ export const TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile
   this.getNotes = function () { return vNotes; };
   this.getSortIdx = function () { return vSortIdx; };
   this.getToDelete = function () { return vToDelete; };
-  this.getDuration = function (pFormat, pLang) {
+  this.getDuration = function (pFormat, pLang, vLang) {
     if (vMile) {
       vDuration = '-';
     }
     else if (!vEnd && !vStart && vPlanStart && vPlanEnd) {
-      return calculateVDuration(pFormat, pLang, this.getPlanStart(), this.getPlanEnd());
+      return calculateVDuration(pFormat, pLang, this.getPlanStart(), this.getPlanEnd(), vLang);
     }
     else if (!vEnd && vDuration) { return vDuration }
     else {
-      vDuration = calculateVDuration(pFormat, pLang, this.getStart(), this.getEnd());
+      vDuration = calculateVDuration(pFormat, pLang, this.getStart(), this.getEnd(), vLang);
     }
     return vDuration;
   };
 
-  function calculateVDuration(pFormat, pLang, start, end) {
+  function calculateVDuration(pFormat, pLang, start, end, vLang) {
     let vDuration;
     let vUnits = null;
     switch (pFormat) {
@@ -276,17 +278,32 @@ export const TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile
     // if ((vTaskEnd.getTime() - (vTaskEnd.getTimezoneOffset() * 60000)) % (86400000) == 0) {
     //   vTaskEnd = new Date(vTaskEnd.getFullYear(), vTaskEnd.getMonth(), vTaskEnd.getDate() + 1, vTaskEnd.getHours(), vTaskEnd.getMinutes(), vTaskEnd.getSeconds());
     // }
-    // let tmpPer = (getOffset(this.getStart(), vTaskEnd, 999, vUnits)) / 1000;
-
-    const hours = (end.getTime() - start.getTime()) / 1000 / 60 / 60;
-    let tmpPer;
-    switch (vUnits) {
-      case 'hour': tmpPer = Math.round(hours); vDuration = tmpPer + ' ' + ((tmpPer != 1) ? pLang['hrs'] : pLang['hr']); break;
-      case 'day': tmpPer = Math.round(hours / 24); vDuration = tmpPer + ' ' + ((tmpPer != 1) ? pLang['dys'] : pLang['dy']); break;
-      case 'week': tmpPer = Math.round(hours / 24 / 7); vDuration = tmpPer + ' ' + ((tmpPer != 1) ? pLang['wks'] : pLang['wk']); break;
-      case 'month': tmpPer = Math.round(hours / 24 / 7 / 4.35); vDuration = tmpPer + ' ' + ((tmpPer != 1) ? pLang['mths'] : pLang['mth']); break;
-      case 'quarter': tmpPer = Math.round(hours / 24 / 7 / 13); vDuration = tmpPer + ' ' + ((tmpPer != 1) ? pLang['qtrs'] : pLang['qtr']); break;
+    // let tmpPer = (getOffset(this.getStart(), vTaskEnd, 999, vUnits)) / 1000;\
+    
+    if (vLang === 'fa') {
+      let startTime = moment(start);
+      let endTime = moment(end);
+      const hours = (endTime.diff(startTime)) / 1000 / 60 / 60;
+      let tmpPer;
+      switch (vUnits) {
+        case 'hour': tmpPer = Math.round(hours); vDuration = tmpPer + ' ' + ((tmpPer != 1) ? pLang['hrs'] : pLang['hr']); break;
+        case 'day': tmpPer = Math.round(hours / 24); vDuration = tmpPer + ' ' + ((tmpPer != 1) ? pLang['dys'] : pLang['dy']); break;
+        case 'week': tmpPer = Math.round(hours / 24 / 7); vDuration = tmpPer + ' ' + ((tmpPer != 1) ? pLang['wks'] : pLang['wk']); break;
+        case 'month': tmpPer = Math.round(hours / 24 / 7 / 4.35); vDuration = tmpPer + ' ' + ((tmpPer != 1) ? pLang['mths'] : pLang['mth']); break;
+        case 'quarter': tmpPer = Math.round(hours / 24 / 7 / 13); vDuration = tmpPer + ' ' + ((tmpPer != 1) ? pLang['qtrs'] : pLang['qtr']); break;
+      }
+    } else {
+      const hours = (end.getTime() - start.getTime()) / 1000 / 60 / 60;
+      let tmpPer;
+      switch (vUnits) {
+        case 'hour': tmpPer = Math.round(hours); vDuration = tmpPer + ' ' + ((tmpPer != 1) ? pLang['hrs'] : pLang['hr']); break;
+        case 'day': tmpPer = Math.round(hours / 24); vDuration = tmpPer + ' ' + ((tmpPer != 1) ? pLang['dys'] : pLang['dy']); break;
+        case 'week': tmpPer = Math.round(hours / 24 / 7); vDuration = tmpPer + ' ' + ((tmpPer != 1) ? pLang['wks'] : pLang['wk']); break;
+        case 'month': tmpPer = Math.round(hours / 24 / 7 / 4.35); vDuration = tmpPer + ' ' + ((tmpPer != 1) ? pLang['mths'] : pLang['mth']); break;
+        case 'quarter': tmpPer = Math.round(hours / 24 / 7 / 13); vDuration = tmpPer + ' ' + ((tmpPer != 1) ? pLang['qtrs'] : pLang['qtr']); break;
+      }
     }
+    
     return vDuration;
   }
 
@@ -456,7 +473,7 @@ export const createTaskInfo = function (pTask, templateStrOrFn = null) {
       if (this.vShowTaskInfoDur == 1 && !pTask.getMile()) {
         vTmpDiv = newNode(vTaskInfo, 'div', null, 'gTILine gTId');
         newNode(vTmpDiv, 'span', null, 'gTaskLabel', this.vLangs[this.vLang]['dur'] + ': ');
-        newNode(vTmpDiv, 'span', null, 'gTaskText', pTask.getDuration(this.vFormat, this.vLangs[this.vLang]));
+        newNode(vTmpDiv, 'span', null, 'gTaskText', pTask.getDuration(this.vFormat, this.vLangs[this.vLang], this.vLang));
       }
       if (this.vShowTaskInfoComp == 1) {
         vTmpDiv = newNode(vTaskInfo, 'div', null, 'gTILine gTIc');

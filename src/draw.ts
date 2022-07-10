@@ -1,4 +1,5 @@
 import * as lang from "./lang";
+import * as date from "./utils/date_utils";
 import * as moment from 'jalali-moment';
 
 import {
@@ -16,7 +17,13 @@ import {
   updateGridHeaderWidth,
   removeListener,
 } from "./events";
-import { calculateCurrentDateOffset, getOffset, getScrollbarWidth, printChart } from "./utils/general_utils";
+import {
+  calculateCurrentDateOffset,
+  calculatePersianCurrentDateOffset,
+  getOffset,
+  getScrollbarWidth,
+  printChart
+} from "./utils/general_utils";
 import { createTaskInfo, AddTaskItem, AddTaskItemObject, RemoveTaskItem, processRows, ClearTasks } from "./task";
 
 import { getXMLProject, getXMLTask } from "./xml";
@@ -366,8 +373,8 @@ export const GanttChart = function (pDiv, pFormat) {
     let persianEndTime = '';
     if (this.vLang == 'fa') {
       moment.locale('fa');
-      let vTmpDateAsString = vMinDate.getFullYear() + '-' + (vMinDate.getMonth() + 1) + '-' + vMinDate.getDate();
-      let vMaxDateAsString = vMaxDate.getFullYear() + '-' + (vMaxDate.getMonth() + 1) + '-' + vMaxDate.getDate();
+      let vTmpDateAsString = date.toStandardDate(vMinDate);
+      let vMaxDateAsString = date.toStandardDate(vMaxDate);
       persianStartTime = moment.from(vTmpDateAsString, 'en', 'YYYY-MM-DD').locale('fa').format('YYYY-MM-DD');
       persianEndTime = moment.from(vMaxDateAsString, 'en', 'YYYY-MM-DD').locale('fa').format('YYYY-MM-DD');
       startTime = moment(persianStartTime, 'jYYYY/jMM/jDD');
@@ -404,9 +411,15 @@ export const GanttChart = function (pDiv, pFormat) {
 
         vTmpDate.setDate(vTmpDate.getDate() + 1);
       } else if (this.vFormat == "week") {
-        const vTmpCell = newNode(vTmpRow, "td", null, vHeaderCellClass, null, vColWidth);
-        newNode(vTmpCell, "div", null, null, formatDateStr(vTmpDate, this.vWeekMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang), vColWidth);
-        vTmpDate.setDate(vTmpDate.getDate() + 7);
+        if (this.vLang === "fa") {
+          const vTmpCell = newNode(vTmpRow, "td", null, vHeaderCellClass, null, vColWidth);
+          newNode(vTmpCell, "div", null, null, formatDateStr(startTime.toDate(), this.vWeekMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang), vColWidth);
+          startTime.add(7, 'day');
+        } else {
+          const vTmpCell = newNode(vTmpRow, "td", null, vHeaderCellClass, null, vColWidth);
+          newNode(vTmpCell, "div", null, null, formatDateStr(vTmpDate, this.vWeekMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang), vColWidth);
+          vTmpDate.setDate(vTmpDate.getDate() + 7);
+        }
       } else if (this.vFormat == "month") {
         if (this.vLang === "fa") {
           vColSpan = 12 - (+startTime.month());
@@ -488,13 +501,23 @@ export const GanttChart = function (pDiv, pFormat) {
 
         vTmpDate.setDate(vTmpDate.getDate() + 1);
       } else if (this.vFormat == "week") {
-        if (vTmpDate <= vMaxDate) {
-          const vTmpCell = newNode(vTmpRow, "td", null, vMinorHeaderCellClass);
-          newNode(vTmpCell, "div", null, null, formatDateStr(vTmpDate, this.vWeekMinorDateDisplayFormat, this.vLangs[this.vLang], this.vLang), vColWidth);
-          vNumCols++;
-        }
+        if (this.vLang === "fa") {
+          if (startTime <= endTime) {
+            const vTmpCell = newNode(vTmpRow, "td", null, vMinorHeaderCellClass);
+            newNode(vTmpCell, "div", null, null, formatDateStr(startTime.toDate(), this.vWeekMinorDateDisplayFormat, this.vLangs[this.vLang], this.vLang), vColWidth);
+            vNumCols++;
+          }
 
-        vTmpDate.setDate(vTmpDate.getDate() + 7);
+          startTime.add(7, 'day');
+        } else {
+          if (vTmpDate <= vMaxDate) {
+            const vTmpCell = newNode(vTmpRow, "td", null, vMinorHeaderCellClass);
+            newNode(vTmpCell, "div", null, null, formatDateStr(vTmpDate, this.vWeekMinorDateDisplayFormat, this.vLangs[this.vLang], this.vLang), vColWidth);
+            vNumCols++;
+          }
+
+          vTmpDate.setDate(vTmpDate.getDate() + 7);
+        }
       } else if (this.vFormat == "month") {
         if (this.vLang === "fa") {
           if (startTime <= endTime) {
@@ -769,7 +792,7 @@ export const GanttChart = function (pDiv, pFormat) {
             vCaptionStr = vTmpItem.getResource();
             break;
           case "Duration":
-            vCaptionStr = vTmpItem.getDuration(this.vFormat, this.vLangs[this.vLang]);
+            vCaptionStr = vTmpItem.getDuration(this.vFormat, this.vLangs[this.vLang], this.vLang);
             break;
           case "Complete":
             vCaptionStr = vTmpItem.getCompStr();
@@ -820,7 +843,11 @@ export const GanttChart = function (pDiv, pFormat) {
       } else if (this.vFormat == "week") {
         onePeriod *= 24 * 7;
       }
-      columnCurrentDay = Math.floor(calculateCurrentDateOffset(curTaskStart, curTaskEnd) / onePeriod) - 1;
+      if (this.vLang === 'fa') {
+        columnCurrentDay = Math.floor(calculatePersianCurrentDateOffset(curTaskStart, curTaskEnd) / onePeriod) - 1;
+      } else {
+        columnCurrentDay = Math.floor(calculateCurrentDateOffset(curTaskStart, curTaskEnd) / onePeriod) - 1;
+      }
     }
 
     for (let j = 0; j < vNumCols - 1; j++) {

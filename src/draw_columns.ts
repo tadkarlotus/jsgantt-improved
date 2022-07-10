@@ -42,7 +42,7 @@ export const draw_header = function (column, i, vTmpRow, vTaskList, vEditable, v
   }
   if ('vShowDur' === column) {
     vTmpCell = newNode(vTmpRow, 'td', null, 'gdur');
-    const text = makeInput(vTaskList[i].getDuration(vFormat, vLangs[vLang]), vEditable, 'text', vTaskList[i].getDuration());
+    const text = makeInput(vTaskList[i].getDuration(vFormat, vLangs[vLang], vLang), vEditable, 'text', vTaskList[i].getDuration());
     vTmpDiv = newNode(vTmpCell, 'div', null, null, text);
     const callback = (task, e) => task.setDuration(e.target.value);
     addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'dur', Draw);
