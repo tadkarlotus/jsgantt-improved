@@ -1,16 +1,23 @@
 import { addFormatListeners } from "../events";
+import * as moment from "jalali-moment";
 
-export const makeInput = function (formattedValue, editable, type = 'text', value = null, choices = null) {
+export const makeInput = function (formattedValue, editable, type = 'text', value = null, choices = null, vLang = 'en', elementId = '') {
   if (!value) {
     value = formattedValue;
   }
   if (editable) {
     switch (type) {
       case 'date':
+        let persianDate = '';
+        if (moment(value).isValid())
+          persianDate = moment(value).locale('fa').format('YYYY/MM/DD');
         // Take timezone into account before converting to ISO String
         value = value ? new Date(value.getTime() - (value.getTimezoneOffset() * 60000)).toISOString().split('T')[0] : '';
-        // TODO: Show a persian date component here:
-        return `<input class="gantt-inputtable" type="date" value="${value}">`;
+        if (vLang === "fa") {
+          return `<input class="gantt-inputtable data-jdp form-input" value="${persianDate}" type="text" data-jdp id="jdp-${elementId}">`;
+        } else {
+          return `<input class="gantt-inputtable" type="date" value="${value}">`;
+        }
       case 'resource':
         if (choices) {
           const found = choices.filter(c => c.id == value || c.name == value);

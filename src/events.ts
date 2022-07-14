@@ -2,6 +2,7 @@ import {
   delayedHide, changeFormat, stripIds, isIE, findObj, fadeToolTip, getScrollbarWidth,
   isParentElementOrSelf, updateFlyingObj
 } from "./utils/general_utils";
+import Datepicker, {defaultOptionsValue, ISelectedDates} from "@ms.shafaei/persian-datepicker";
 
 // Function to open/close and hide/show children of specified task
 export const folder = function (pID, ganttObj) {
@@ -310,6 +311,33 @@ export const addListenerClickCell = function (vTmpCell, vEvents, task, column) {
       vEvents[column](task, e, vTmpCell, column);
     }
   }, vTmpCell);
+}
+
+export const addListenerPersianDateCell = function (persianDatePicker, vTmpCell, vEventsChange, callback, tasks, index, column, draw = null, event = 'blur')
+{
+  const task = tasks[index];
+  if (vTmpCell.children[0] && vTmpCell.children[0].children && vTmpCell.children[0].children[0]) {
+    const tagName = vTmpCell.children[0].children[0].tagName;
+    const selectInputOrButton = tagName === 'SELECT' || tagName === 'INPUT' || tagName === 'BUTTON';
+    if (selectInputOrButton) {
+      // TODO: e parameter is focus event in the date picker but, we should investigate this event in the persian date picker 
+      persianDatePicker.onAfterDateSelected = function (e) {
+        if (callback) {
+          callback(task, e);
+        }
+        if (vEventsChange[column] && typeof vEventsChange[column] === 'function') {
+          const q = vEventsChange[column](tasks, task, e, vTmpCell, vColumnsNames[column]);
+          if (q && q.then) {
+            q.then(e => draw());
+          } else {
+            draw();
+          }
+        } else {
+          draw();
+        }
+      }
+    }
+  }
 }
 
 export const addListenerInputCell = function (vTmpCell, vEventsChange, callback, tasks, index, column, draw = null, event = 'blur') {

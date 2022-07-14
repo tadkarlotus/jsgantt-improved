@@ -69,6 +69,7 @@ export const GanttChart = function (pDiv, pFormat) {
 
   this.vShowDeps = 1;
   this.vTotalHeight = undefined;
+  // TODO: persian
   this.vWorkingDays = {
     0: true, // sunday
     1: true,
@@ -225,6 +226,12 @@ export const GanttChart = function (pDiv, pFormat) {
     let vTmpContentTab = newNode(vTmpContentTabWrapper, "table", null, "gtasktable");
     let vTmpContentTBody = newNode(vTmpContentTab, "tbody");
     let vNumRows = 0;
+    if (window['persianDatePickers'] && window['persianDatePickers'].length > 0) {
+      window['persianDatePickers'].forEach((picker) => picker.destroy());
+      window['persianDatePickers'] = [];
+    } else {
+      window['persianDatePickers'] = [];
+    }
     for (let i = 0; i < this.vTaskList.length; i++) {
       let vBGColor;
       if (this.vTaskList[i].getGroup() == 1) vBGColor = "ggroupitem";
