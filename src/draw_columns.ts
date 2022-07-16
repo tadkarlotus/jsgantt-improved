@@ -207,8 +207,39 @@ export const draw_header = function (column, i, vTmpRow, vTaskList, vEditable, v
     const v = vTaskList[i].getPlanStart() ? formatDateStr(vTaskList[i].getPlanStart(), vDateTaskTableDisplayFormat, vLangs[vLang], this.vLang) : '';
     const text = makeInput(v, vEditable, 'date', vTaskList[i].getPlanStart(), null, vLang, vTaskList[i].getID());
     vTmpDiv = newNode(vTmpCell, 'div', null, null, text);
-    const callback = (task, e) => task.setPlanStart(e.target.value);
-    addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'planstart', Draw);
+    // const callback = (task, e) => task.setPlanStart(e.target.value);
+    let callback = null;
+    if (vLang === 'fa') {
+      // callback = (task, e) => console.log(e.target.value);
+
+      let ganttOptions = new GanttOptionsValue()
+      ganttOptions.onChange = function (selectedDate: ISelectedDates, self: GantDatepicker): void {
+        console.log(selectedDate);
+        if (!self.task) return;
+        let date = moment(selectedDate[0]);
+        self.task.setPlanStart(date.format('YYYY-MM-DD'));
+        // self.dateInputElement.value = date.format('jYYYY-jMM-jDD');
+        (document.getElementById(self.dateInputElement.id) as HTMLInputElement).value = date.format('jYYYY/jMM/jDD');
+        self.onAfterDateSelected(selectedDate, self);
+      };
+      ganttOptions.onClick = function (selectedDate: ISelectedDates, self: GantDatepicker): void {
+        console.log(selectedDate);
+      };
+      ganttOptions.defaultValue = false;
+      ganttOptions.autoClose = true;
+      ganttOptions.minDate = false;
+      ganttOptions.maxDate = false;
+      let persianDatePicker = new GantDatepicker(vTmpDiv.children[0], ganttOptions);
+      persianDatePicker.task = vTaskList[i];
+      persianDatePicker.dateInputElement = vTmpDiv.children[0];
+
+      window['persianDatePickers'].push(persianDatePicker);
+      addListenerPersianDateCell(persianDatePicker, vTmpCell, vEventsChange, callback, vTaskList, i, 'planstart', Draw);
+    } else {
+      callback = (task, e) => task.setPlanStart(e.target.value);
+      addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'planstart', Draw);
+    }
+    // addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'planstart', Draw);
     addListenerClickCell(vTmpCell, vEvents, vTaskList[i], 'planstart');
   }
   if ('vShowPlanEndDate' === column) {
@@ -216,8 +247,39 @@ export const draw_header = function (column, i, vTmpRow, vTaskList, vEditable, v
     const v = vTaskList[i].getPlanEnd() ? formatDateStr(vTaskList[i].getPlanEnd(), vDateTaskTableDisplayFormat, vLangs[vLang], this.vLang) : '';
     const text = makeInput(v, vEditable, 'date', vTaskList[i].getPlanEnd(), null, vLang, vTaskList[i].getID());
     vTmpDiv = newNode(vTmpCell, 'div', null, null, text);
-    const callback = (task, e) => task.setPlanEnd(e.target.value);
-    addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'planend', Draw);
+    // const callback = (task, e) => task.setPlanEnd(e.target.value);
+    let callback = null;
+    if (vLang === 'fa') {
+      // callback = (task, e) => console.log(e.target.value);
+
+      let ganttOptions = new GanttOptionsValue()
+      ganttOptions.onChange = function (selectedDate: ISelectedDates, self: GantDatepicker): void {
+        console.log(selectedDate);
+        if (!self.task) return;
+        let date = moment(selectedDate[0]);
+        self.task.setPlanEnd(date.format('YYYY-MM-DD'));
+        // self.dateInputElement.value = date.format('jYYYY-jMM-jDD');
+        (document.getElementById(self.dateInputElement.id) as HTMLInputElement).value = date.format('jYYYY/jMM/jDD');
+        self.onAfterDateSelected(selectedDate, self);
+      };
+      ganttOptions.onClick = function (selectedDate: ISelectedDates, self: GantDatepicker): void {
+        console.log(selectedDate);
+      };
+      ganttOptions.defaultValue = false;
+      ganttOptions.autoClose = true;
+      ganttOptions.minDate = false;
+      ganttOptions.maxDate = false;
+      let persianDatePicker = new GantDatepicker(vTmpDiv.children[0], ganttOptions);
+      persianDatePicker.task = vTaskList[i];
+      persianDatePicker.dateInputElement = vTmpDiv.children[0];
+
+      window['persianDatePickers'].push(persianDatePicker);
+      addListenerPersianDateCell(persianDatePicker, vTmpCell, vEventsChange, callback, vTaskList, i, 'planend', Draw);
+    } else {
+      callback = (task, e) => task.setPlanStart(e.target.value);
+      addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'planend', Draw);
+    }
+    // addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'planend', Draw);
     addListenerClickCell(vTmpCell, vEvents, vTaskList[i], 'planend');
   }
   if ('vShowCost' === column) {

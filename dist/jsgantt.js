@@ -1150,8 +1150,39 @@ exports.draw_header = function (column, i, vTmpRow, vTaskList, vEditable, vEvent
         var v = vTaskList[i].getPlanStart() ? date_utils_1.formatDateStr(vTaskList[i].getPlanStart(), vDateTaskTableDisplayFormat, vLangs[vLang], this.vLang) : '';
         var text = draw_utils_1.makeInput(v, vEditable, 'date', vTaskList[i].getPlanStart(), null, vLang, vTaskList[i].getID());
         vTmpDiv = draw_utils_1.newNode(vTmpCell, 'div', null, null, text);
-        var callback = function (task, e) { return task.setPlanStart(e.target.value); };
-        events_1.addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'planstart', Draw);
+        // const callback = (task, e) => task.setPlanStart(e.target.value);
+        var callback = null;
+        if (vLang === 'fa') {
+            // callback = (task, e) => console.log(e.target.value);
+            var ganttOptions = new GanttOptionsValue();
+            ganttOptions.onChange = function (selectedDate, self) {
+                console.log(selectedDate);
+                if (!self.task)
+                    return;
+                var date = moment(selectedDate[0]);
+                self.task.setPlanStart(date.format('YYYY-MM-DD'));
+                // self.dateInputElement.value = date.format('jYYYY-jMM-jDD');
+                document.getElementById(self.dateInputElement.id).value = date.format('jYYYY/jMM/jDD');
+                self.onAfterDateSelected(selectedDate, self);
+            };
+            ganttOptions.onClick = function (selectedDate, self) {
+                console.log(selectedDate);
+            };
+            ganttOptions.defaultValue = false;
+            ganttOptions.autoClose = true;
+            ganttOptions.minDate = false;
+            ganttOptions.maxDate = false;
+            var persianDatePicker = new GantDatepicker(vTmpDiv.children[0], ganttOptions);
+            persianDatePicker.task = vTaskList[i];
+            persianDatePicker.dateInputElement = vTmpDiv.children[0];
+            window['persianDatePickers'].push(persianDatePicker);
+            events_1.addListenerPersianDateCell(persianDatePicker, vTmpCell, vEventsChange, callback, vTaskList, i, 'planstart', Draw);
+        }
+        else {
+            callback = function (task, e) { return task.setPlanStart(e.target.value); };
+            events_1.addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'planstart', Draw);
+        }
+        // addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'planstart', Draw);
         events_1.addListenerClickCell(vTmpCell, vEvents, vTaskList[i], 'planstart');
     }
     if ('vShowPlanEndDate' === column) {
@@ -1159,8 +1190,39 @@ exports.draw_header = function (column, i, vTmpRow, vTaskList, vEditable, vEvent
         var v = vTaskList[i].getPlanEnd() ? date_utils_1.formatDateStr(vTaskList[i].getPlanEnd(), vDateTaskTableDisplayFormat, vLangs[vLang], this.vLang) : '';
         var text = draw_utils_1.makeInput(v, vEditable, 'date', vTaskList[i].getPlanEnd(), null, vLang, vTaskList[i].getID());
         vTmpDiv = draw_utils_1.newNode(vTmpCell, 'div', null, null, text);
-        var callback = function (task, e) { return task.setPlanEnd(e.target.value); };
-        events_1.addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'planend', Draw);
+        // const callback = (task, e) => task.setPlanEnd(e.target.value);
+        var callback = null;
+        if (vLang === 'fa') {
+            // callback = (task, e) => console.log(e.target.value);
+            var ganttOptions = new GanttOptionsValue();
+            ganttOptions.onChange = function (selectedDate, self) {
+                console.log(selectedDate);
+                if (!self.task)
+                    return;
+                var date = moment(selectedDate[0]);
+                self.task.setPlanEnd(date.format('YYYY-MM-DD'));
+                // self.dateInputElement.value = date.format('jYYYY-jMM-jDD');
+                document.getElementById(self.dateInputElement.id).value = date.format('jYYYY/jMM/jDD');
+                self.onAfterDateSelected(selectedDate, self);
+            };
+            ganttOptions.onClick = function (selectedDate, self) {
+                console.log(selectedDate);
+            };
+            ganttOptions.defaultValue = false;
+            ganttOptions.autoClose = true;
+            ganttOptions.minDate = false;
+            ganttOptions.maxDate = false;
+            var persianDatePicker = new GantDatepicker(vTmpDiv.children[0], ganttOptions);
+            persianDatePicker.task = vTaskList[i];
+            persianDatePicker.dateInputElement = vTmpDiv.children[0];
+            window['persianDatePickers'].push(persianDatePicker);
+            events_1.addListenerPersianDateCell(persianDatePicker, vTmpCell, vEventsChange, callback, vTaskList, i, 'planend', Draw);
+        }
+        else {
+            callback = function (task, e) { return task.setPlanStart(e.target.value); };
+            events_1.addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'planend', Draw);
+        }
+        // addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'planend', Draw);
         events_1.addListenerClickCell(vTmpCell, vEvents, vTaskList[i], 'planend');
     }
     if ('vShowCost' === column) {
