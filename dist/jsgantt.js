@@ -206,6 +206,7 @@ exports.GanttChart = function (pDiv, pFormat) {
         var vTmpContentTBody = draw_utils_1.newNode(vTmpContentTab, "tbody");
         var vNumRows = 0;
         if (window['persianDatePickers'] && window['persianDatePickers'].length > 0) {
+            // TODO: The parent div of the calendar should be removed too! The calendar code should be modified.
             window['persianDatePickers'].forEach(function (picker) { return picker.destroy(); });
             window['persianDatePickers'] = [];
         }
@@ -366,12 +367,12 @@ exports.GanttChart = function (pDiv, pFormat) {
                 }
                 var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, vHeaderCellClass, null, null, null, null, colspan);
                 if (this.vLang === "fa") {
-                    // vCellContents += formatDateStr(startTime.toDate(), this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
-                    vCellContents += date_utils_1.formatDateStr(startTime.toDate(), date_utils_1.parseDateFormatStr("yy/mm"), this.vLangs[this.vLang], this.vLang);
+                    vCellContents += date_utils_1.formatDateStr(startTime.toDate(), this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
+                    // vCellContents += formatDateStr(startTime.toDate(), parseDateFormatStr("yy/mm"), this.vLangs[this.vLang], this.vLang)
                     startTime.add(6, 'day');
-                    // if (this.vShowEndWeekDate == 1) vCellContents += " - " + formatDateStr(startTime.toDate(), this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
                     if (this.vShowEndWeekDate == 1)
-                        vCellContents += " - " + date_utils_1.formatDateStr(startTime.toDate(), date_utils_1.parseDateFormatStr("yy/mm"), this.vLangs[this.vLang], this.vLang);
+                        vCellContents += " - " + date_utils_1.formatDateStr(startTime.toDate(), this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
+                    // if (this.vShowEndWeekDate == 1) vCellContents += " - " + formatDateStr(startTime.toDate(), parseDateFormatStr("yy/mm"), this.vLangs[this.vLang], this.vLang);
                     draw_utils_1.newNode(vTmpCell, "div", null, null, vCellContents, vColWidth * colspan);
                     startTime.add(1, 'day');
                 }

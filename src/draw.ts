@@ -227,6 +227,7 @@ export const GanttChart = function (pDiv, pFormat) {
     let vTmpContentTBody = newNode(vTmpContentTab, "tbody");
     let vNumRows = 0;
     if (window['persianDatePickers'] && window['persianDatePickers'].length > 0) {
+      // TODO: The parent div of the calendar should be removed too! The calendar code should be modified.
       window['persianDatePickers'].forEach((picker) => picker.destroy());
       window['persianDatePickers'] = [];
     } else {
@@ -410,12 +411,12 @@ export const GanttChart = function (pDiv, pFormat) {
 
         let vTmpCell = newNode(vTmpRow, "td", null, vHeaderCellClass, null, null, null, null, colspan);
         if (this.vLang === "fa") {
-          // vCellContents += formatDateStr(startTime.toDate(), this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
-          vCellContents += formatDateStr(startTime.toDate(), parseDateFormatStr("yy/mm"), this.vLangs[this.vLang], this.vLang)
+          vCellContents += formatDateStr(startTime.toDate(), this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
+          // vCellContents += formatDateStr(startTime.toDate(), parseDateFormatStr("yy/mm"), this.vLangs[this.vLang], this.vLang)
           startTime.add(6, 'day');
 
-          // if (this.vShowEndWeekDate == 1) vCellContents += " - " + formatDateStr(startTime.toDate(), this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
-          if (this.vShowEndWeekDate == 1) vCellContents += " - " + formatDateStr(startTime.toDate(), parseDateFormatStr("yy/mm"), this.vLangs[this.vLang], this.vLang);
+          if (this.vShowEndWeekDate == 1) vCellContents += " - " + formatDateStr(startTime.toDate(), this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
+          // if (this.vShowEndWeekDate == 1) vCellContents += " - " + formatDateStr(startTime.toDate(), parseDateFormatStr("yy/mm"), this.vLangs[this.vLang], this.vLang);
           newNode(vTmpCell, "div", null, null, vCellContents, vColWidth * colspan);
           startTime.add(1, 'day');
         } else {

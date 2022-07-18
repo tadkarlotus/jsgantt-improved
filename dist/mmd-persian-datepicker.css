@@ -1,0 +1,190 @@
+@-webkit-keyframes animateIn {
+  from {
+    opacity: 0;
+    -webkit-transform: translateY(-5px);
+            transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: none;
+            transform: none;
+  }
+}
+@keyframes animateIn {
+  from {
+    opacity: 0;
+    -webkit-transform: translateY(-5px);
+            transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: none;
+            transform: none;
+  }
+}
+.mmd-picker {
+  position: absolute;
+  -webkit-transition: all 0.15s ease;
+  -o-transition: all 0.15s ease;
+  transition: all 0.15s ease;
+  background: #fff;
+  -webkit-box-shadow: 0 1px 7px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 1px 7px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  direction: rtl;
+  display: none;
+  max-width: 688px;
+  font-size: 16px;
+}
+.mmd-picker--rtl {
+  right: 0;
+}
+.mmd-picker--left {
+  left: 0;
+}
+.mmd-picker *,
+.mmd-picker *::before,
+.mmd-picker *::after {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+.mmd-picker::-moz-selection, .mmd-picker *::-moz-selection {
+  background: transparent;
+}
+.mmd-picker::selection, .mmd-picker *::selection {
+  background: transparent;
+}
+.mmd-picker::-moz-selection, .mmd-picker *::-moz-selection {
+  background: transparent;
+}
+.mmd-picker--open {
+  display: -ms-flexbox;
+  display: flex;
+  z-index: 99999;
+}
+.mmd-picker--open-animated {
+  -webkit-animation: animateIn 0.3s;
+          animation: animateIn 0.3s;
+}
+.mmd-picker__month-wrapper {
+  width: 334px;
+}
+.mmd-picker__month-wrapper + .mmd-picker__month-wrapper {
+  margin-right: 20px;
+}
+.mmd-picker__header {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: center;
+      justify-content: center;
+  padding: 1em 0.5em;
+  font-weight: bolder;
+}
+.mmd-picker__arrows {
+  cursor: pointer;
+  position: absolute;
+  top: 1em;
+}
+.mmd-picker__arrows svg {
+  width: 1em;
+  height: 1em;
+}
+.mmd-picker__arrows--right {
+  right: 1em;
+}
+.mmd-picker__arrows--left {
+  left: 1em;
+}
+.mmd-picker__weeks {
+  text-align: center;
+  display: -ms-flexbox;
+  display: flex;
+  padding: 0 2px;
+}
+.mmd-picker__week-item {
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  width: 14.2857142857%;
+  margin: 0 0 0.8em;
+  font-weight: bolder;
+  -ms-flex-pack: center;
+      justify-content: center;
+}
+.mmd-picker__days {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  text-align: center;
+  padding-right: 2px;
+}
+.mmd-picker__day-item {
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: center;
+      justify-content: center;
+  width: 14.2857142857%;
+  -ms-flex-preferred-size: 14.2857142857%;
+      flex-basis: 14.2857142857%;
+  cursor: pointer;
+  border-radius: 50%;
+  margin: 1px;
+  -webkit-transition: background-color 0.2s ease;
+  -o-transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease;
+  max-width: 45px;
+  height: 45px;
+  line-height: 45px;
+}
+.mmd-picker__day-item:hover {
+  background-color: #e0e0e0;
+}
+.mmd-picker__day-item--today {
+  -webkit-box-shadow: 0 0 2px #e0e0e0;
+          box-shadow: 0 0 2px #e0e0e0;
+}
+.mmd-picker__day-item--selected {
+  background-color: #0f4bd0 !important;
+  color: #fff !important;
+}
+.mmd-picker__day-item--selected:hover {
+  background-color: #0f4bd0 !important;
+  color: #fff !important;
+}
+.mmd-picker__day-item--in-range {
+  background-color: rgba(135, 171, 251, 0.3);
+}
+.mmd-picker__day-item--in-range:hover {
+  background-color: rgba(135, 171, 251, 0.3);
+}
+.mmd-picker__day-item--disabled {
+  opacity: 0.4;
+}
+.mmd-picker__day-item--disabled:hover {
+  color: #000;
+  color: initial;
+  background: transparent !important;
+  -webkit-box-shadow: none !important;
+          box-shadow: none !important;
+  cursor: not-allowed !important;
+}
+.mmd-picker__day-item--weekend {
+  color: #dd3535;
+}
+.mmd-picker__day-item--offset {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  background-color: transparent !important;
+}
+
+.mmd-wrapper {
+  position: absolute;
+}
+.mmd-wrapper--inline {
+  position: relative;
+}
+.mmd-wrapper--inline > .mmd-picker {
+  position: relative;
+}

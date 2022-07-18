@@ -1,6 +1,5 @@
 /* Sample CSS for jsGanttImproved v1.8.0 */
-@import "../node_modules/jalalidatepicker/dist/jalalidatepicker.css";
-@import "../node_modules/@ms.shafaei/persian-datepicker/dist/mmd-persian-datepicker.css";
+@import "./mmd-persian-datepicker.css";
 
 div.gantt {
   font-family: tahoma, arial, verdana, Sans-serif;
