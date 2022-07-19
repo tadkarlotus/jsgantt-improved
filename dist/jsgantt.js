@@ -1220,7 +1220,7 @@ exports.draw_header = function (column, i, vTmpRow, vTaskList, vEditable, vEvent
             events_1.addListenerPersianDateCell(persianDatePicker, vTmpCell, vEventsChange, callback, vTaskList, i, 'planend', Draw);
         }
         else {
-            callback = function (task, e) { return task.setPlanStart(e.target.value); };
+            callback = function (task, e) { return task.setPlanEnd(e.target.value); };
             events_1.addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'planend', Draw);
         }
         // addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'planend', Draw);

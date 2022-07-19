@@ -276,7 +276,7 @@ export const draw_header = function (column, i, vTmpRow, vTaskList, vEditable, v
       window['persianDatePickers'].push(persianDatePicker);
       addListenerPersianDateCell(persianDatePicker, vTmpCell, vEventsChange, callback, vTaskList, i, 'planend', Draw);
     } else {
-      callback = (task, e) => task.setPlanStart(e.target.value);
+      callback = (task, e) => task.setPlanEnd(e.target.value);
       addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'planend', Draw);
     }
     // addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'planend', Draw);
