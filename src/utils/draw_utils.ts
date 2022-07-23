@@ -8,13 +8,10 @@ export const makeInput = function (formattedValue, editable, type = 'text', valu
   if (editable) {
     switch (type) {
       case 'date':
-        let persianDate = '';
-        if (moment(value).isValid())
-          persianDate = moment(value).locale('fa').format('YYYY/MM/DD');
         // Take timezone into account before converting to ISO String
         value = value ? new Date(value.getTime() - (value.getTimezoneOffset() * 60000)).toISOString().split('T')[0] : '';
         if (vLang === "fa") {
-          return `<input class="gantt-inputtable data-jdp form-input" value="${persianDate}" type="text" data-jdp id="jdp-${elementId}">`;
+          return `<input class="gantt-inputtable example1" value="${value}" type="text" id="jdp-${elementId}">`;
         } else {
           return `<input class="gantt-inputtable" type="date" value="${value}">`;
         }

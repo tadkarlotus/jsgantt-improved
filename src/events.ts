@@ -2,7 +2,6 @@ import {
   delayedHide, changeFormat, stripIds, isIE, findObj, fadeToolTip, getScrollbarWidth,
   isParentElementOrSelf, updateFlyingObj
 } from "./utils/general_utils";
-import Datepicker, {defaultOptionsValue, ISelectedDates} from "@ms.shafaei/persian-datepicker";
 
 // Function to open/close and hide/show children of specified task
 export const folder = function (pID, ganttObj) {
