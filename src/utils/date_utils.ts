@@ -459,7 +459,10 @@ export const parseDateFormatStr = function (pFormatStr) {
 export const getIsoWeek = function (pDate, vLang = 'en') {
   // TODO: Persian iso week should be calculated here by vLang argument
   if (vLang === 'fa') {
-    return moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').isoWeek();
+    return moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').week();
+    // Note: for testing a weird scenario.
+    // moment.from('1401-12-29', 'fa', 'jYYYY-jMM-jDD').locale('fa').weeksInYear(); = 52
+    // moment.from('1401-12-29', 'fa', 'jYYYY-jMM-jDD').locale('fa').week(); = 1
   } else {
     let dayMiliseconds = 86400000;
     let keyDay = new Date(pDate.getFullYear(), 0, 4, 0, 0, 0);

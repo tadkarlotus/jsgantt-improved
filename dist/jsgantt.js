@@ -126,7 +126,7 @@ exports.GanttChart = function (pDiv, pFormat) {
     this.vMinGpLen = 8;
     this.vScrollTo = "";
     this.vHourColWidth = 18;
-    this.vDayColWidth = 18;
+    this.vDayColWidth = 72;
     this.vWeekColWidth = 36;
     this.vMonthColWidth = 36;
     this.vQuarterColWidth = 18;
@@ -377,12 +377,10 @@ exports.GanttChart = function (pDiv, pFormat) {
                     startTime.add(1, 'day');
                 }
                 else {
-                    // vCellContents += formatDateStr(vTmpDate, this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
-                    vCellContents += date_utils_1.formatDateStr(vTmpDate, date_utils_1.parseDateFormatStr("yy/mm"), this.vLangs[this.vLang], this.vLang);
+                    vCellContents += date_utils_1.formatDateStr(vTmpDate, this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
                     vTmpDate.setDate(vTmpDate.getDate() + 6);
-                    // if (this.vShowEndWeekDate == 1) vCellContents += " - " + formatDateStr(vTmpDate, this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
                     if (this.vShowEndWeekDate == 1)
-                        vCellContents += " - " + date_utils_1.formatDateStr(vTmpDate, date_utils_1.parseDateFormatStr("yy/mm"), this.vLangs[this.vLang], this.vLang);
+                        vCellContents += " - " + date_utils_1.formatDateStr(vTmpDate, this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
                     draw_utils_1.newNode(vTmpCell, "div", null, null, vCellContents, vColWidth * colspan);
                     vTmpDate.setDate(vTmpDate.getDate() + 1);
                 }
@@ -4912,7 +4910,10 @@ exports.getIsoWeek = function (pDate, vLang) {
     if (vLang === void 0) { vLang = 'en'; }
     // TODO: Persian iso week should be calculated here by vLang argument
     if (vLang === 'fa') {
-        return moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').isoWeek();
+        return moment.from(pDate, 'en', 'YYYY-MM-DD').locale('fa').week();
+        // Note: for testing a weird scenario.
+        // moment.from('1401-12-29', 'fa', 'jYYYY-jMM-jDD').locale('fa').weeksInYear(); = 52
+        // moment.from('1401-12-29', 'fa', 'jYYYY-jMM-jDD').locale('fa').week(); = 1
     }
     else {
         var dayMiliseconds = 86400000;

@@ -139,7 +139,7 @@ export const GanttChart = function (pDiv, pFormat) {
   this.vMinGpLen = 8;
   this.vScrollTo = "";
   this.vHourColWidth = 18;
-  this.vDayColWidth = 18;
+  this.vDayColWidth = 72;
   this.vWeekColWidth = 36;
   this.vMonthColWidth = 36;
   this.vQuarterColWidth = 18;
@@ -420,12 +420,10 @@ export const GanttChart = function (pDiv, pFormat) {
           newNode(vTmpCell, "div", null, null, vCellContents, vColWidth * colspan);
           startTime.add(1, 'day');
         } else {
-          // vCellContents += formatDateStr(vTmpDate, this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
-          vCellContents += formatDateStr(vTmpDate, parseDateFormatStr("yy/mm"), this.vLangs[this.vLang], this.vLang);
+          vCellContents += formatDateStr(vTmpDate, this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
           vTmpDate.setDate(vTmpDate.getDate() + 6);
 
-          // if (this.vShowEndWeekDate == 1) vCellContents += " - " + formatDateStr(vTmpDate, this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
-          if (this.vShowEndWeekDate == 1) vCellContents += " - " + formatDateStr(vTmpDate, parseDateFormatStr("yy/mm"), this.vLangs[this.vLang], this.vLang);
+          if (this.vShowEndWeekDate == 1) vCellContents += " - " + formatDateStr(vTmpDate, this.vDayMajorDateDisplayFormat, this.vLangs[this.vLang], this.vLang);
 
           newNode(vTmpCell, "div", null, null, vCellContents, vColWidth * colspan);
           vTmpDate.setDate(vTmpDate.getDate() + 1);
