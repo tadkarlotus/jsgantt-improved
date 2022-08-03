@@ -199,20 +199,13 @@ exports.GanttChart = function (pDiv, pFormat) {
     };
     this.drawListBody = function (vLeftHeader) {
         var _this = this;
+        this.destroy();
         var vTmpContentTabOuterWrapper = draw_utils_1.newNode(vLeftHeader, "div", null, "gtasktableouterwrapper");
         var vTmpContentTabWrapper = draw_utils_1.newNode(vTmpContentTabOuterWrapper, "div", null, "gtasktablewrapper");
         vTmpContentTabWrapper.style.width = "calc(100% + " + general_utils_1.getScrollbarWidth() + "px)";
         var vTmpContentTab = draw_utils_1.newNode(vTmpContentTabWrapper, "table", null, "gtasktable");
         var vTmpContentTBody = draw_utils_1.newNode(vTmpContentTab, "tbody");
         var vNumRows = 0;
-        if (window['persianDatePickers'] && window['persianDatePickers'].length > 0) {
-            // TODO: The parent div of the calendar should be removed too! The calendar code should be modified.
-            window['persianDatePickers'].forEach(function (picker) { return picker.destroy(); });
-            window['persianDatePickers'] = [];
-        }
-        else {
-            window['persianDatePickers'] = [];
-        }
         var _loop_1 = function (i) {
             var vBGColor = void 0;
             if (this_1.vTaskList[i].getGroup() == 1)
@@ -976,6 +969,16 @@ exports.GanttChart = function (pDiv, pFormat) {
         };
         if (this.vEvents && this.vEvents.afterDraw) {
             this.vEvents.afterDraw();
+        }
+    };
+    this.destroy = function () {
+        if (window['persianDatePickers'] && window['persianDatePickers'].length > 0) {
+            // TODO: The parent div of the calendar should be removed too! The calendar code should be modified.
+            window['persianDatePickers'].forEach(function (picker) { return picker.destroy(); });
+            window['persianDatePickers'] = [];
+        }
+        else {
+            window['persianDatePickers'] = [];
         }
     };
     if (this.vDiv && this.vDiv.nodeName && this.vDiv.nodeName.toLowerCase() == "div")
@@ -7908,7 +7911,7 @@ var Navigator = function () {
                 /**
                  * @description navigator click event
                  */
-                $(document).on('click', '#' + that.model.view.id + ' .pwt-btn', function () {
+                this.model.navigatorClickHandler = function () {
                     if ($(this).is('.pwt-btn-next')) {
                         that.model.state.navigate('next');
                         that.model.view.render();
@@ -7922,7 +7925,8 @@ var Navigator = function () {
                         that.model.view.render();
                         that.model.options.navigator.onPrev(that.model);
                     }
-                });
+                };
+                $(document).on('click', '#' + that.model.view.id + ' .pwt-btn', this.model.navigatorClickHandler);
             }
 
             /**
@@ -7933,20 +7937,22 @@ var Navigator = function () {
                 /**
                  * @description time up btn click event
                  */
-                $(document).on('click', '#' + that.model.view.id + ' .up-btn', function () {
+                this.model.timeUpClickHandler = function () {
                     var timekey = $(this).data('time-key');
                     that.timeUp(timekey);
                     that.model.options.onSelect(that.model.state.selected.unixDate, that.model);
-                });
+                };
+                $(document).on('click', '#' + that.model.view.id + ' .up-btn', this.model.timeUpClickHandler);
 
                 /**
                  * @description time down btn click event
                  */
-                $(document).on('click', '#' + that.model.view.id + ' .down-btn', function () {
+                this.model.timeDownClickHandler = function () {
                     var timekey = $(this).data('time-key');
                     that.timeDown(timekey);
                     that.model.options.onSelect(that.model.state.selected.unixDate, that.model);
-                });
+                };
+                $(document).on('click', '#' + that.model.view.id + ' .down-btn', this.model.timeDownClickHandler);
             }
 
             /**
@@ -7957,7 +7963,7 @@ var Navigator = function () {
                 /**
                  * @description days click event
                  */
-                $(document).on('click', '#' + that.model.view.id + ' .datepicker-day-view td:not(.disabled)', function () {
+                this.model.dayClickHandler = function () {
                     var thisUnix = $(this).data('unix'),
                         mustRender = void 0;
                     that.model.state.setSelectedDateTime('unix', thisUnix);
@@ -7978,7 +7984,8 @@ var Navigator = function () {
                     }
                     that.model.options.dayPicker.onSelect(thisUnix);
                     that.model.options.onSelect(thisUnix, that.model);
-                });
+                };
+                $(document).on('click', '#' + that.model.view.id + ' .datepicker-day-view td:not(.disabled)', this.model.dayClickHandler);
             }
 
             /**
@@ -7989,7 +7996,7 @@ var Navigator = function () {
                 /**
                  * @description month click event
                  */
-                $(document).on('click', '#' + that.model.view.id + ' .datepicker-month-view .month-item:not(.month-item-disable)', function () {
+                this.model.monthClickHandler = function () {
                     var month = $(this).data('month');
                     var year = $(this).data('year');
                     that.model.state.switchViewModeTo('day');
@@ -8005,7 +8012,8 @@ var Navigator = function () {
                     that.model.view.render();
                     that.model.options.monthPicker.onSelect(month);
                     that.model.options.onSelect(that.model.state.selected.unixDate, that.model);
-                });
+                };
+                $(document).on('click', '#' + that.model.view.id + ' .datepicker-month-view .month-item:not(.month-item-disable)', this.model.monthClickHandler);
             }
 
             /**
@@ -8016,7 +8024,7 @@ var Navigator = function () {
                 /**
                  * @description year click event
                  */
-                $(document).on('click', '#' + that.model.view.id + ' .datepicker-year-view .year-item:not(.year-item-disable)', function () {
+                this.model.yearClickHandler = function () {
                     var year = $(this).data('year');
                     that.model.state.switchViewModeTo('month');
                     if (!that.model.options.onlySelectOnDate) {
@@ -8030,7 +8038,8 @@ var Navigator = function () {
                     that.model.view.render();
                     that.model.options.yearPicker.onSelect(year);
                     that.model.options.onSelect(that.model.state.selected.unixDate, that.model);
-                });
+                };
+                $(document).on('click', '#' + that.model.view.id + ' .datepicker-year-view .year-item:not(.year-item-disable)', this.model.yearClickHandler);
             }
         }
     }]);
@@ -8809,6 +8818,12 @@ var View = function () {
     }, {
         key: 'destroy',
         value: function destroy() {
+            $(document).off('click', this.model.yearClickHandler);
+            $(document).off('click', this.model.monthClickHandler);
+            $(document).off('click', this.model.dayClickHandler);
+            $(document).off('click', this.model.timeDownClickHandler);
+            $(document).off('click', this.model.timeUpClickHandler);
+            $(document).off('click', this.model.navigatorClickHandler);
             this.$container.remove();
         }
 

@@ -220,19 +220,14 @@ export const GanttChart = function (pDiv, pFormat) {
   };
 
   this.drawListBody = function (vLeftHeader) {
+    this.destroy();
     let vTmpContentTabOuterWrapper = newNode(vLeftHeader, "div", null, "gtasktableouterwrapper");
     let vTmpContentTabWrapper = newNode(vTmpContentTabOuterWrapper, "div", null, "gtasktablewrapper");
     vTmpContentTabWrapper.style.width = `calc(100% + ${getScrollbarWidth()}px)`;
     let vTmpContentTab = newNode(vTmpContentTabWrapper, "table", null, "gtasktable");
     let vTmpContentTBody = newNode(vTmpContentTab, "tbody");
     let vNumRows = 0;
-    if (window['persianDatePickers'] && window['persianDatePickers'].length > 0) {
-      // TODO: The parent div of the calendar should be removed too! The calendar code should be modified.
-      window['persianDatePickers'].forEach((picker) => picker.destroy());
-      window['persianDatePickers'] = [];
-    } else {
-      window['persianDatePickers'] = [];
-    }
+    
     for (let i = 0; i < this.vTaskList.length; i++) {
       let vBGColor;
       if (this.vTaskList[i].getGroup() == 1) vBGColor = "ggroupitem";
@@ -1068,6 +1063,16 @@ export const GanttChart = function (pDiv, pFormat) {
       this.vEvents.afterDraw();
     }
   };
+
+  this.destroy = function () {
+    if (window['persianDatePickers'] && window['persianDatePickers'].length > 0) {
+      // TODO: The parent div of the calendar should be removed too! The calendar code should be modified.
+      window['persianDatePickers'].forEach((picker) => picker.destroy());
+      window['persianDatePickers'] = [];
+      } else {
+      window['persianDatePickers'] = [];
+    }
+  }
 
   if (this.vDiv && this.vDiv.nodeName && this.vDiv.nodeName.toLowerCase() == "div") this.vDivId = this.vDiv.id;
 }; //GanttChart

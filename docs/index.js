@@ -198,6 +198,10 @@ function printTasksInConsole() {
   console.log(tasks);
 }
 
+function destroy() {
+  g.destroy();
+}
+
 function printChart() {
   let width, height;
   [width, height] = document.querySelector("#print_page_size").value.split(",");
