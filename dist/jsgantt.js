@@ -993,6 +993,7 @@ var date_utils_1 = require("./utils/date_utils");
 var task_1 = require("./task");
 var events_1 = require("./events");
 var draw_utils_1 = require("./utils/draw_utils");
+var jalaliMoment = require("jalali-moment");
 var jquery = require("jquery");
 window['persianDate'] = require('persian-date');
 require("@tadkarlotus/persian-datepicker/dist/js/@tadkarlotus/persian-datepicker.js");
@@ -1040,6 +1041,9 @@ exports.draw_header = function (column, i, vTmpRow, vTaskList, vEditable, vEvent
     }
     if ('vShowComp' === column) {
         vTmpCell = draw_utils_1.newNode(vTmpRow, 'td', null, 'gcomp');
+        if (vTaskList[i].getGroup() == 1) {
+            vEditable = false;
+        }
         var text = draw_utils_1.makeInput(vTaskList[i].getCompStr(), vEditable, 'percentage', vTaskList[i].getCompVal(), null, vLang);
         vTmpDiv = draw_utils_1.newNode(vTmpCell, 'div', null, null, text);
         var callback = function (task, e) { task.setComp(e.target.value); task.setCompVal(e.target.value); };
@@ -1049,10 +1053,16 @@ exports.draw_header = function (column, i, vTmpRow, vTaskList, vEditable, vEvent
     if ('vShowStartDate' === column) {
         vTmpCell = draw_utils_1.newNode(vTmpRow, 'td', null, 'gstartdate');
         var v = date_utils_1.formatDateStr(vTaskList[i].getStartVar(), vDateTaskTableDisplayFormat, vLangs[vLang], this.vLang);
+        if (vTaskList[i].getGroup() == 1) {
+            vEditable = false;
+        }
+        if (vTaskList[i].getGroup() == 1 && vLang === 'fa') {
+            v = jalaliMoment.from(v, 'en', 'DD/MM/YYYY').locale('fa').format('jYYYY/jMM/jDD');
+        }
         var text = draw_utils_1.makeInput(v, vEditable, 'date', vTaskList[i].getStartVar(), null, vLang, vTaskList[i].getID());
         vTmpDiv = draw_utils_1.newNode(vTmpCell, 'div', null, null, text);
         var callback = null;
-        if (vLang === 'fa') {
+        if (vLang === 'fa' && vTaskList[i].getGroup() == 0) {
             var task_2 = vTaskList[i];
             var persianDatePicker = jQuery(vTmpDiv.children[0]).pDatepicker({
                 autoClose: true,
@@ -1077,10 +1087,16 @@ exports.draw_header = function (column, i, vTmpRow, vTaskList, vEditable, vEvent
     if ('vShowEndDate' === column) {
         vTmpCell = draw_utils_1.newNode(vTmpRow, 'td', null, 'genddate');
         var v = date_utils_1.formatDateStr(vTaskList[i].getEndVar(), vDateTaskTableDisplayFormat, vLangs[vLang], this.vLang);
+        if (vTaskList[i].getGroup() == 1) {
+            vEditable = false;
+        }
+        if (vTaskList[i].getGroup() == 1 && vLang === 'fa') {
+            v = jalaliMoment.from(v, 'en', 'DD/MM/YYYY').locale('fa').format('jYYYY/jMM/jDD');
+        }
         var text = draw_utils_1.makeInput(v, vEditable, 'date', vTaskList[i].getEndVar(), null, vLang, vTaskList[i].getID());
         vTmpDiv = draw_utils_1.newNode(vTmpCell, 'div', null, null, text);
         var callback = null;
-        if (vLang === 'fa') {
+        if (vLang === 'fa' && vTaskList[i].getGroup() == 0) {
             var task_3 = vTaskList[i];
             var persianDatePicker = jQuery(vTmpDiv.children[0]).pDatepicker({
                 autoClose: true,
@@ -1105,10 +1121,16 @@ exports.draw_header = function (column, i, vTmpRow, vTaskList, vEditable, vEvent
     if ('vShowPlanStartDate' === column) {
         vTmpCell = draw_utils_1.newNode(vTmpRow, 'td', null, 'gplanstartdate');
         var v = vTaskList[i].getPlanStart() ? date_utils_1.formatDateStr(vTaskList[i].getPlanStart(), vDateTaskTableDisplayFormat, vLangs[vLang], this.vLang) : '';
+        if (vTaskList[i].getGroup() == 1) {
+            vEditable = false;
+        }
+        if (vTaskList[i].getGroup() == 1 && vLang === 'fa') {
+            v = jalaliMoment.from(v, 'en', 'DD/MM/YYYY').locale('fa').format('jYYYY/jMM/jDD');
+        }
         var text = draw_utils_1.makeInput(v, vEditable, 'date', vTaskList[i].getPlanStart(), null, vLang, vTaskList[i].getID());
         vTmpDiv = draw_utils_1.newNode(vTmpCell, 'div', null, null, text);
         var callback = null;
-        if (vLang === 'fa') {
+        if (vLang === 'fa' && vTaskList[i].getGroup() == 0) {
             var task_4 = vTaskList[i];
             var persianDatePicker = jQuery(vTmpDiv.children[0]).pDatepicker({
                 autoClose: true,
@@ -1133,10 +1155,16 @@ exports.draw_header = function (column, i, vTmpRow, vTaskList, vEditable, vEvent
     if ('vShowPlanEndDate' === column) {
         vTmpCell = draw_utils_1.newNode(vTmpRow, 'td', null, 'gplanenddate');
         var v = vTaskList[i].getPlanEnd() ? date_utils_1.formatDateStr(vTaskList[i].getPlanEnd(), vDateTaskTableDisplayFormat, vLangs[vLang], this.vLang) : '';
+        if (vTaskList[i].getGroup() == 1) {
+            vEditable = false;
+        }
+        if (vTaskList[i].getGroup() == 1 && vLang === 'fa') {
+            v = jalaliMoment.from(v, 'en', 'DD/MM/YYYY').locale('fa').format('jYYYY/jMM/jDD');
+        }
         var text = draw_utils_1.makeInput(v, vEditable, 'date', vTaskList[i].getPlanEnd(), null, vLang, vTaskList[i].getID());
         vTmpDiv = draw_utils_1.newNode(vTmpCell, 'div', null, null, text);
         var callback = null;
-        if (vLang === 'fa') {
+        if (vLang === 'fa' && vTaskList[i].getGroup() == 0) {
             var task_5 = vTaskList[i];
             var persianDatePicker = jQuery(vTmpDiv.children[0]).pDatepicker({
                 autoClose: true,
@@ -1235,7 +1263,7 @@ exports.draw_task_headings = function (column, vTmpRow, vLangs, vLang, vAddition
     }
 };
 
-},{"./events":5,"./task":10,"./utils/date_utils":11,"./utils/draw_utils":12,"@tadkarlotus/persian-datepicker/dist/js/@tadkarlotus/persian-datepicker.js":15,"jquery":17,"persian-date":20}],4:[function(require,module,exports){
+},{"./events":5,"./task":10,"./utils/date_utils":11,"./utils/draw_utils":12,"@tadkarlotus/persian-datepicker/dist/js/@tadkarlotus/persian-datepicker.js":15,"jalali-moment":16,"jquery":17,"persian-date":20}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DrawDependencies = exports.drawDependency = void 0;

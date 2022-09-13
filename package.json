@@ -1,6 +1,6 @@
 {
   "name": "@tadkarlotus/jsgantt-improved",
-  "version": "2.8.9",
+  "version": "2.8.11",
   "description": "jsgantt-improved",
   "main": "dist/index.js",
   "scripts": {
@@ -31,23 +31,23 @@
   "homepage": "https://jsganttimproved.github.io/jsgantt-improved/docs/",
   "dependencies": {
     "@tadkarlotus/persian-datepicker": "^1.2.2",
-    "@types/node": "^12.0.10",
+    "persian-date": "^1.1.0",
     "jalali-moment": "^3.3.11",
+    "webdriver-manager": "^13.0.0",
     "jquery": "^3.6.0",
-    "webdriver-manager": "^13.0.0"
+    "@types/jquery": "^3.5.14",
+    "@types/moment-jalaali": "^0.7.5",
+    "@types/node": "^12.0.10"
   },
   "devDependencies": {
     "@types/chai": "^4.1.5",
     "@types/jasmine": "^3.3.0",
-    "@types/jquery": "^3.5.14",
-    "@types/moment-jalaali": "^0.7.5",
     "chai": "^4.1.2",
     "http-server": "^0.11.1",
     "jasmine": "^3.3.0",
     "jasmine-core": "^3.3.0",
     "jasmine-spec-reporter": "^4.2.1",
     "mocha": "^5.2.0",
-    "persian-date": "^1.1.0",
     "protractor": "^5.4.1",
     "selenium-webdriver": "^4.0.0-alpha.1",
     "ts-node": "^7.0.1",

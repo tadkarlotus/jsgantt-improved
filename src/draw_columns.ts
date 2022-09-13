@@ -2,8 +2,7 @@ import { formatDateStr } from './utils/date_utils';
 import { AddTaskItemObject } from './task';
 import { addListenerInputCell, addListenerClickCell, addListenerPersianDateCell} from './events';
 import { newNode, makeInput } from './utils/draw_utils';
-import moment = require("moment-jalaali");
-import {Moment} from "moment-jalaali";
+import * as jalaliMoment from 'jalali-moment';
 import jquery = require("jquery");
 window['persianDate'] = require('persian-date');
 import persianDate = require('persian-date');
@@ -64,6 +63,9 @@ export const draw_header = function (column, i, vTmpRow, vTaskList, vEditable, v
   }
   if ('vShowComp' === column) {
     vTmpCell = newNode(vTmpRow, 'td', null, 'gcomp');
+    if (vTaskList[i].getGroup() == 1) {
+      vEditable = false;
+    }
     const text = makeInput(vTaskList[i].getCompStr(), vEditable, 'percentage', vTaskList[i].getCompVal(), null, vLang);
     vTmpDiv = newNode(vTmpCell, 'div', null, null, text);
     const callback = (task, e) => { task.setComp(e.target.value); task.setCompVal(e.target.value); }
@@ -72,12 +74,19 @@ export const draw_header = function (column, i, vTmpRow, vTaskList, vEditable, v
   }
   if ('vShowStartDate' === column) {
     vTmpCell = newNode(vTmpRow, 'td', null, 'gstartdate');
-    const v = formatDateStr(vTaskList[i].getStartVar(), vDateTaskTableDisplayFormat, vLangs[vLang], this.vLang);
+    let v = formatDateStr(vTaskList[i].getStartVar(), vDateTaskTableDisplayFormat, vLangs[vLang], this.vLang);
+    
+    if (vTaskList[i].getGroup() == 1) {
+      vEditable = false;
+    }
+    if (vTaskList[i].getGroup() == 1 && vLang === 'fa') {
+      v = jalaliMoment.from(v, 'en', 'DD/MM/YYYY').locale('fa').format('jYYYY/jMM/jDD');
+    }
     const text = makeInput(v, vEditable, 'date', vTaskList[i].getStartVar(), null, vLang, vTaskList[i].getID());
     vTmpDiv = newNode(vTmpCell, 'div', null, null, text);
 
     let callback = null;
-    if (vLang === 'fa') {
+    if (vLang === 'fa' && vTaskList[i].getGroup() == 0) {
       const task = vTaskList[i];
       const persianDatePicker = jQuery(vTmpDiv.children[0]).pDatepicker({
         autoClose: true,
@@ -99,12 +108,19 @@ export const draw_header = function (column, i, vTmpRow, vTaskList, vEditable, v
   }
   if ('vShowEndDate' === column) {
     vTmpCell = newNode(vTmpRow, 'td', null, 'genddate');
-    const v = formatDateStr(vTaskList[i].getEndVar(), vDateTaskTableDisplayFormat, vLangs[vLang], this.vLang);
+    let v = formatDateStr(vTaskList[i].getEndVar(), vDateTaskTableDisplayFormat, vLangs[vLang], this.vLang);
+
+    if (vTaskList[i].getGroup() == 1) {
+      vEditable = false;
+    }
+    if (vTaskList[i].getGroup() == 1 && vLang === 'fa') {
+      v = jalaliMoment.from(v, 'en', 'DD/MM/YYYY').locale('fa').format('jYYYY/jMM/jDD');
+    }
     const text = makeInput(v, vEditable, 'date', vTaskList[i].getEndVar(), null, vLang, vTaskList[i].getID());
     vTmpDiv = newNode(vTmpCell, 'div', null, null, text);
     
     let callback = null;
-    if (vLang === 'fa') {
+    if (vLang === 'fa' && vTaskList[i].getGroup() == 0) {
       const task = vTaskList[i];
       const persianDatePicker = jQuery(vTmpDiv.children[0]).pDatepicker({
         autoClose: true,
@@ -126,11 +142,18 @@ export const draw_header = function (column, i, vTmpRow, vTaskList, vEditable, v
   }
   if ('vShowPlanStartDate' === column) {
     vTmpCell = newNode(vTmpRow, 'td', null, 'gplanstartdate');
-    const v = vTaskList[i].getPlanStart() ? formatDateStr(vTaskList[i].getPlanStart(), vDateTaskTableDisplayFormat, vLangs[vLang], this.vLang) : '';
+    let v = vTaskList[i].getPlanStart() ? formatDateStr(vTaskList[i].getPlanStart(), vDateTaskTableDisplayFormat, vLangs[vLang], this.vLang) : '';
+
+    if (vTaskList[i].getGroup() == 1) {
+      vEditable = false;
+    }
+    if (vTaskList[i].getGroup() == 1 && vLang === 'fa') {
+      v = jalaliMoment.from(v, 'en', 'DD/MM/YYYY').locale('fa').format('jYYYY/jMM/jDD');
+    }
     const text = makeInput(v, vEditable, 'date', vTaskList[i].getPlanStart(), null, vLang, vTaskList[i].getID());
     vTmpDiv = newNode(vTmpCell, 'div', null, null, text);
     let callback = null;
-    if (vLang === 'fa') {
+    if (vLang === 'fa' && vTaskList[i].getGroup() == 0) {
       const task = vTaskList[i];
       const persianDatePicker = jQuery(vTmpDiv.children[0]).pDatepicker({
         autoClose: true,
@@ -153,11 +176,18 @@ export const draw_header = function (column, i, vTmpRow, vTaskList, vEditable, v
   }
   if ('vShowPlanEndDate' === column) {
     vTmpCell = newNode(vTmpRow, 'td', null, 'gplanenddate');
-    const v = vTaskList[i].getPlanEnd() ? formatDateStr(vTaskList[i].getPlanEnd(), vDateTaskTableDisplayFormat, vLangs[vLang], this.vLang) : '';
+    let v = vTaskList[i].getPlanEnd() ? formatDateStr(vTaskList[i].getPlanEnd(), vDateTaskTableDisplayFormat, vLangs[vLang], this.vLang) : '';
+
+    if (vTaskList[i].getGroup() == 1) {
+      vEditable = false;
+    }
+    if (vTaskList[i].getGroup() == 1 && vLang === 'fa') {
+      v = jalaliMoment.from(v, 'en', 'DD/MM/YYYY').locale('fa').format('jYYYY/jMM/jDD');
+    }
     const text = makeInput(v, vEditable, 'date', vTaskList[i].getPlanEnd(), null, vLang, vTaskList[i].getID());
     vTmpDiv = newNode(vTmpCell, 'div', null, null, text);
     let callback = null;
-    if (vLang === 'fa') {
+    if (vLang === 'fa' && vTaskList[i].getGroup() == 0) {
       const task = vTaskList[i];
       const persianDatePicker = jQuery(vTmpDiv.children[0]).pDatepicker({
         autoClose: true,
